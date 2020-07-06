@@ -14,13 +14,13 @@ Simple TCP server in python
 > repo_url = http://nexus-ebo-cicd.apps.ccsd3.rht-labs.com/repository/pypi-public/
 
 # Install package
-```TBD```
-
-# Run server
-```python3 ```
+```
 python3 -m pip install --user --upgrade setuptools wheel
-
 python3 setup.py sdist bdist_wheel
 python3 -m pip install --user --upgrade twine
-
 python3 -m twine upload -r pypi-internal dist/*
+```
+
+# Run server
+```pip3.8 install tcpserver```
+
