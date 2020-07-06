@@ -1,3 +1,4 @@
+*.spec
 *.egg
 *.egg-info/
 *.pyc
@@ -24,3 +25,4 @@
 TEST-*.xml
 .cache
 /gradlew*
+/refactored-memory.*

@@ -7,7 +7,7 @@ class Server:
         self.bind_ip = ip
         self.bind_port = port
 
-    def handle_client_connection(client_socket):
+    def handle_client_connection(self, client_socket):
         request = client_socket.recv(1024)
         print('Received {}'.format(request))
         response = "hello"
@@ -32,7 +32,8 @@ class Server:
             )
             t.start()
 
-
-if __name__ == "__main__":
-    server = Server('0.0.0.0', 8088)
+if __name__ == '__main__':
+    # read IP/port values from env SERVER_IP and SERVER_PORT
+    import os
+    server = Server('0.0.0.0', int(os.environ['SERVER_PORT']))
     server.run()
