@@ -1,5 +1,13 @@
-import socket
-import threading
+import socket, threading, sys, traceback
+
+
+# static method for handling client connection
+def handle_client_connection(client_socket):
+    request = client_socket.recv(1024)
+    print(">>> '{}'".format(request))
+    response = "{}".format(request)
+    client_socket.sendall(response.encode('utf-8'))
+    client_socket.close()
 
 
 class Server:
@@ -7,33 +15,37 @@ class Server:
         self.bind_ip = ip
         self.bind_port = port
 
-    def handle_client_connection(self, client_socket):
-        request = client_socket.recv(1024)
-        print('Received {}'.format(request))
-        response = "hello"
-        client_socket.sendall(response.encode('utf-8'))
-        client_socket.close()
-
     def run(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((self.bind_ip, self.bind_port))
-        s.listen(5)  # max backlog of connections
+        try:
+            # bind to ip/port and listen
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind((self.bind_ip, self.bind_port))
+            s.listen(5)  # max backlog of connections
 
-        print("Listening on {}:{}".format(self.bind_ip, self.bind_port))
+            print("Listening on {}:{}".format(self.bind_ip, self.bind_port))
 
-        while True:
-            client_socket, address = s.accept()
-            print("Accepted connection from {}:{}".format(address[0], address[1]))
-            t = threading.Thread(
-                target=self.handle_client_connection,
-                # without comma you'd get a... TypeError: handle_client_connection() argument after
-                # * must be a sequence, not _socketobject
-                args=(client_socket,)
-            )
-            t.start()
+            while True:
+                # accept incoming connections (max 5)
+                client_socket, address = s.accept()
+                print("Accepted connection from {}:{}".format(address[0], address[1]))
+                t = threading.Thread(
+                    target=handle_client_connection,
+                    # without comma you'd get a... TypeError: handle_client_connection() argument after
+                    # * must be a sequence, not _socketobject
+                    args=(client_socket,)
+                )
+                t.start()
+        except Exception:
+            traceback.print_exc(file=sys.stdout)
+        finally:
+            print('Closing connection')
+            if not client_socket is None:
+                client_socket.close()
+            return 0
+
 
 if __name__ == '__main__':
-    # read IP/port values from env SERVER_IP and SERVER_PORT
     import os
+    # read port values from env SERVER_PORT
     server = Server('0.0.0.0', int(os.environ['SERVER_PORT']))
     server.run()
