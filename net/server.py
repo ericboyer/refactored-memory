@@ -1,3 +1,9 @@
+"""Server that echos text sent from client over TCP.
+
+Usage:
+    refactored-memory-server [--port=BIND_PORT]
+
+"""
 import socket, threading, sys, traceback
 
 
@@ -8,6 +14,15 @@ def handle_client_connection(client_socket):
     response = "{}".format(request)
     client_socket.sendall(response.encode('utf-8'))
     client_socket.close()
+
+
+def main():
+    import os, docopt
+    args = docopt.docopt(__doc__)
+    # read port parameter or from BIND_PORT environment variable
+    server_port = args['--port'] or os.environ['BIND_PORT']
+    server = Server('0.0.0.0', int(server_port))
+    server.run()
 
 
 class Server:
@@ -45,7 +60,4 @@ class Server:
 
 
 if __name__ == '__main__':
-    import os
-    # read port values from env SERVER_PORT
-    server = Server('0.0.0.0', int(os.environ['SERVER_PORT']))
-    server.run()
+    main()

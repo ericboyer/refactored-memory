@@ -1,9 +1,9 @@
-import setuptools
+from setuptools import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-
-setuptools.setup(
+# review https://amir.rachum.com/blog/2017/07/28/python-entry-points/ for improvements
+setup(
     name='refactored-memory',
     version='0.0.1', #replace with jenkins build number (patch) ???
     author="Black Label",
@@ -23,7 +23,8 @@ setuptools.setup(
     python_requires='>=3.8',
     entry_points={
         'console_scripts': [
-            'refactored-memory = net.server:main',
+            'refactored-memory-server = net.server:main',
+            'refactored-memory-client = net.client:main',
         ],
     }
 )
