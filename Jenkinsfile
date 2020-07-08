@@ -22,11 +22,6 @@ pipeline {
                 resourceRequestCpu "1"
                 resourceLimitCpu "1"
             }
-
-            containerTemplate {
-                name "jnlp"
-                image "jenkins/jnlp-slave:3.35-5-alpine"
-            }
         }
     }
     stages {
