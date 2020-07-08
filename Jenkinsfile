@@ -10,8 +10,23 @@
 
 pipeline {
     agent {
-        node {
-            label 'refactored-memory/python-38'
+        kubernetes {
+            label "python-38"
+            cloud "openshift"
+            serviceAccount "jenkins"
+            containerTemplate {
+                name "python"
+                image "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
+                resourceRequestMemory "1Gi"
+                resourceLimitMemory "1Gi"
+                resourceRequestCpu "1"
+                resourceLimitCpu "1"
+            }
+
+            containerTemplate {
+                name "jnlp"
+                image "jenkins/jnlp-slave:3.35-5-alpine"
+            }
         }
     }
     stages {
