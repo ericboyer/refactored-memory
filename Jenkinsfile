@@ -10,8 +10,8 @@
 
 pipeline {
     agent {
-        docker {
-            image 'refactored-memory/python-38'
+        node {
+            label 'python-38'
         }
     }
     stages {
