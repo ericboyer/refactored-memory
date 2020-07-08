@@ -11,7 +11,7 @@
 pipeline {
     agent {
         node {
-            label 'python-38'
+            label 'refactored-memory/python-38'
         }
     }
     stages {
