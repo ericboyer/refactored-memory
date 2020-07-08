@@ -10,19 +10,23 @@
 
 pipeline {
     agent {
-        kubernetes {
-            label "python-38"
-            cloud "openshift"
-            serviceAccount "jenkins"
-            containerTemplate {
-                name "jnlp"
-                image "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
-                resourceRequestMemory "1Gi"
-                resourceLimitMemory "1Gi"
-                resourceRequestCpu "1"
-                resourceLimitCpu "1"
-            }
+        node {
+            label 'python'
         }
+//        kubernetes {
+//            label "python-38"
+//            cloud "openshift"
+//            serviceAccount "jenkins"
+//            containerTemplate {
+//                name "jnlp"
+////                image "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
+//                "jenkins/jnlp-agent-python"
+//                resourceRequestMemory "1Gi"
+//                resourceLimitMemory "1Gi"
+//                resourceRequestCpu "1"
+//                resourceLimitCpu "1"
+//            }
+//        }
     }
     stages {
         stage('Build') {
