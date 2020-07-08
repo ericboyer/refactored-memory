@@ -11,7 +11,7 @@
 pipeline {
     agent {
         node {
-            label 'python'
+            label 'jnlp-agent-python'
         }
 //        kubernetes {
 //            label "python-38"
