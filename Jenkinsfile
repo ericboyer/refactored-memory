@@ -23,7 +23,9 @@ pipeline {
             }
         }
         stage('Test') {
-            sh 'Placeholder for unit tests'
+            steps {
+                sh 'echo Placeholder for unit tests'
+            }
         }
         stage('Publish') {
             steps {
