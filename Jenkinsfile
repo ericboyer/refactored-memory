@@ -15,7 +15,7 @@ pipeline {
             cloud "openshift"
             serviceAccount "jenkins"
             containerTemplate {
-                name "python"
+                name "jnlp"
                 image "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
                 resourceRequestMemory "1Gi"
                 resourceLimitMemory "1Gi"
