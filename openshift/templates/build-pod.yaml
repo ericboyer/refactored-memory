@@ -34,4 +34,4 @@ spec:
       name: "workspace-volume"
     - name: "config-volume"
       configMap:
-        name: pypi-config
+        name: pypirc-config
