@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 # review https://amir.rachum.com/blog/2017/07/28/python-entry-points/ for improvements
 setup(
     name='refactored-memory',
-    version='0.0.{}'.format(os.environ("BUILD_NUMBER")),
+    version='0.0.{}'.format(os.environ["BUILD_NUMBER"]),
     author="Black Label",
     author_email="eboyer@redhat.com",
     long_description=long_description,
