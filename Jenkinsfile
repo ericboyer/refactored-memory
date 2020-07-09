@@ -18,12 +18,11 @@ pipeline {
         }
     }
     stages {
-//        node('python')
         stage('Build') {
             steps {
                 container('python') {
                     sh 'python3 --version'
-                    sh 'python3 -m pip install --user --upgrade setuptools wheel'
+                    sh 'python3 -m pip install --upgrade setuptools wheel twine'
                     sh 'python3 setup.py sdist bdist_wheel'
                 }
             }
@@ -35,8 +34,9 @@ pipeline {
         }
         stage('Publish') {
             steps {
-                sh 'python3 -m pip install --user --upgrade twine'
-                sh 'python3 -m twine upload -r pypi-internal dist/*'
+                container('python') {
+                    sh 'python3 -m twine upload --config-file /etc/config/.pypirc -r pypi-internal dist/*'
+                }
             }
         }
     }

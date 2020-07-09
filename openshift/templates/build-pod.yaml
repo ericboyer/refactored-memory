@@ -16,6 +16,8 @@ spec:
         - mountPath: "/home/jenkins"
           name: "workspace-volume"
           readOnly: false
+        - mountPath: "/etc/config"
+          name: "config-volume"
       name: "python"
       tty: true
     - image: "jenkins/jnlp-slave:3.35-5-alpine"
@@ -30,3 +32,6 @@ spec:
   volumes:
     - emptyDir: {}
       name: "workspace-volume"
+    - name: "config-volume"
+      configMap:
+        name: pypi-config
