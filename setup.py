@@ -1,11 +1,12 @@
 from setuptools import setup
+import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 # review https://amir.rachum.com/blog/2017/07/28/python-entry-points/ for improvements
 setup(
     name='refactored-memory',
-    version='0.0.1', #replace with jenkins build number (patch) ???
+    version='0.0.{}'.format(os.environ("BUILD_NUMBER")),
     author="Black Label",
     author_email="eboyer@redhat.com",
     long_description=long_description,
