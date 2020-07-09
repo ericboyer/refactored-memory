@@ -9,26 +9,36 @@
 //}
 
 pipeline {
-    agent {
-        node {
-            label 'jnlp-agent-python'
-        }
+//    agent {
 //        kubernetes {
 //            label "python-38"
 //            cloud "openshift"
 //            serviceAccount "jenkins"
 //            containerTemplate {
-//                name "jnlp"
-////                image "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
-//                "jenkins/jnlp-agent-python"
+//                name "python"
+//                image "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
 //                resourceRequestMemory "1Gi"
 //                resourceLimitMemory "1Gi"
 //                resourceRequestCpu "1"
 //                resourceLimitCpu "1"
 //            }
+//
+//            containerTemplate {
+//                name "jnlp"
+//                image "jenkins/jnlp-slave:3.35-5-alpine"
+//// use openshift slave base here
+//            }
 //        }
+//    }
+    agent {
+        kubernetes {
+            cloud "openshift"
+            label "build-pod"
+            yamlFile "openshift/templates/build-pod.yaml"
+        }
     }
     stages {
+        node
         stage('Build') {
             steps {
                 sh 'python3 --version'
