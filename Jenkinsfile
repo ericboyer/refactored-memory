@@ -9,38 +9,18 @@
 //}
 
 pipeline {
-//    agent {
-//        kubernetes {
-//            label "python-38"
-//            cloud "openshift"
-//            serviceAccount "jenkins"
-//            containerTemplate {
-//                name "python"
-//                image "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
-//                resourceRequestMemory "1Gi"
-//                resourceLimitMemory "1Gi"
-//                resourceRequestCpu "1"
-//                resourceLimitCpu "1"
-//            }
-//
-//            containerTemplate {
-//                name "jnlp"
-//                image "jenkins/jnlp-slave:3.35-5-alpine"
-//// use openshift slave base here
-//            }
-//        }
-//    }
     agent {
         kubernetes {
             cloud "openshift"
             label "build-pod"
+            serviceAccount "jenkins"
             yamlFile "openshift/templates/build-pod.yaml"
         }
     }
     stages {
-        node
+//        node('python')
         stage('Build') {
-            steps {
+            container('python') {
                 sh 'python3 --version'
                 sh 'python3 -m pip install --user --upgrade setuptools wheel'
                 sh 'python3 setup.py sdist bdist_wheel'

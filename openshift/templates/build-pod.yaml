@@ -16,7 +16,7 @@ spec:
         - mountPath: "/home/jenkins"
           name: "workspace-volume"
           readOnly: false
-      name: "gradle"
+      name: "python"
       tty: true
     - image: "jenkins/jnlp-slave:3.35-5-alpine"
       name: "jnlp"
