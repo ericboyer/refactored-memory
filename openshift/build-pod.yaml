@@ -22,7 +22,8 @@ spec:
       name: "python"
       tty: true
     - name: "jnlp"
-      image: "registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7"
+      image: "quay.io/openshift/origin-jenkins-agent-base"
+#      image: "registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7"
 #      image: "jenkins/jnlp-slave:latest"
 #      image: "registry.redhat.io/openshift4/ose-jenkins-agent-base:v4.4.0"
       env:
