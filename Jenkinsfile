@@ -1,14 +1,15 @@
-//environment {
-//    imageName = "refactored-memory"
-//    devProject = "${imageName}-dev"
-//    prodProject = "${imageName}-prod"
-//    devTag = "0.0-0"
-//    prodTag = ""
-//    destApp     = "${imageName}-green"
-//    activeApp   = ""
-//}
+
 
 pipeline {
+    environment {
+        imageName = "refactored-memory"
+        devProject = "${imageName}-dev"
+        prodProject = "${imageName}-prod"
+        devTag = "0.0-0"
+        prodTag = ""
+        destApp     = "${imageName}-green"
+        activeApp   = ""
+    }
     agent {
         kubernetes {
             cloud "openshift"
@@ -47,12 +48,10 @@ pipeline {
             }
         }
         stage('Build and Tag OpenShift Image') {
-// create dockerfile buildconfig as opposed to a binary
-//                    echo "Building app from binary"
-//                    // Build Image (binary build), tag Image
-//                    // Make sure the image name is correct in the tag!
-//                    sh "oc -n ${devProject} start-build bc/${imageName} --from-file=./build/libs/${imageName}-${prodTag}.jar"
-//                    sh "oc -n ${devProject} tag ${devProject}/${imageName}:latest ${devProject}/${imageName}:${devTag}"
+            // Build Image (binary build), tag Image
+            // Make sure the image name is correct in the tag!
+            sh "oc -n ${devProject} start-build bc/${imageName}"
+            sh "oc -n ${devProject} tag ${devProject}/${imageName}:latest ${devProject}/${imageName}:${devTag}"
 
 //                # Set up Dev Application (binary build strategy)
 //                oc new-build --binary=true --name=${app} openjdk-11-rhel8:latest -n ${project}
