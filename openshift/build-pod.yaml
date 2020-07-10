@@ -7,7 +7,8 @@ metadata:
 spec:
   containers:
 #$> oc import-image ubi8/python-38 --from=registry.access.redhat.com/ubi8/python-38 --confirm
-    - image: "registry.access.redhat.com/ubi8/python-38:1-22"
+    - image: "quay.io/eboyer/python38-oc:0.0.1"
+#      image: "registry.access.redhat.com/ubi8/python-38:1-22"
       command:
         - cat
       env:
@@ -22,9 +23,9 @@ spec:
       name: "python"
       tty: true
     - name: "jnlp"
-      image: "quay.io/openshift/origin-jenkins-agent-base"
+#      image: "quay.io/openshift/origin-jenkins-agent-base"
 #      image: "registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7"
-#      image: "jenkins/jnlp-slave:latest"
+      image: "jenkins/jnlp-slave:latest"
 #      image: "registry.redhat.io/openshift4/ose-jenkins-agent-base:v4.4.0"
       env:
         - name: HOME
