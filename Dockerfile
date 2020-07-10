@@ -1,9 +1,9 @@
 FROM registry.access.redhat.com/ubi8/python-38
 
 ARG port
-ENV port = ${BIND_PORT}
+ENV port=${BIND_PORT}
 ARG repo
-ENV repo = ${PYPI_GROUP_REPO}
+ENV repo=${PYPI_GROUP_REPO}
 
 EXPOSE ${port}
 
