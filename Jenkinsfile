@@ -49,10 +49,12 @@ pipeline {
         }
         stage('Build and Tag OpenShift Image') {
             steps {
-                // Build Image (binary build), tag Image
-                // Make sure the image name is correct in the tag!
-                sh "oc -n ${devProject} start-build bc/${imageName}"
-                sh "oc -n ${devProject} tag ${devProject}/${imageName}:latest ${devProject}/${imageName}:${devTag}"
+                container('python') {
+                    // Build Image (binary build), tag Image
+                    // Make sure the image name is correct in the tag!
+                    sh "oc -n ${devProject} start-build bc/${imageName}"
+                    sh "oc -n ${devProject} tag ${devProject}/${imageName}:latest ${devProject}/${imageName}:${devTag}"
+                }
             }
         }
         stage('Deploy') {
