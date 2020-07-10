@@ -22,8 +22,8 @@ spec:
       name: "python"
       tty: true
     - name: "jnlp"
-#      image: "jenkins/jnlp-slave:3.35-5-alpine"
-      image: "registry.redhat.io/openshift4/ose-jenkins-agent-base:v4.4.0"
+      image: "jenkins/jnlp-slave:latest"
+#      image: "registry.redhat.io/openshift4/ose-jenkins-agent-base:v4.4.0"
       env:
         - name: HOME
           value: /home/jenkins
