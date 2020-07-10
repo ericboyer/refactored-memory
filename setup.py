@@ -3,7 +3,7 @@ import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-# review https://amir.rachum.com/blog/2017/07/28/python-entry-points/ for improvements
+
 setup(
     name='refactored-memory',
     version='0.0.{}'.format(os.environ["BUILD_NUMBER"]),

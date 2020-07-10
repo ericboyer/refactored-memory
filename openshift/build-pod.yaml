@@ -6,7 +6,8 @@ metadata:
   name: "build-pod"
 spec:
   containers:
-    - image: "docker-registry.default.svc:5000/ebo-cicd/python-38:latest"
+#$> oc import-image ubi8/python-38 --from=registry.access.redhat.com/ubi8/python-38 --confirm
+    - image: "registry.access.redhat.com/ubi8/python-38:1-22"
       command:
         - cat
       env:
