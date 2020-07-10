@@ -23,8 +23,8 @@ pipeline {
             steps {
                 container('python') {
                     sh 'python3 --version'
-                    sh 'python3 -m pip install --upgrade setuptools wheel twine'
-                    sh 'python3 -m pip install --upgrade -r requirements.txt'
+                    sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
+                    sh 'python3 -m pip install --user --upgrade -r requirements.txt'
                 }
             }
         }
