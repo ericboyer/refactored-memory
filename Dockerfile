@@ -21,4 +21,4 @@ RUN echo "port=${port}" && \
     pip install refactored-memory --trusted-host ${nexus_hostname} -i http://${nexus_hostname}/${repo}
 
 # BIND_PORT is optional as it's defined in the pod's env and made available via configmap; being explicit here
-CMD python3 refactored-memory-server --port=${port}
+CMD refactored-memory-server --port=${port}
