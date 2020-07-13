@@ -82,7 +82,7 @@ pipeline {
                     sh "oc -n ${devProject} set image dc/${imageName} ${imageName}=${devProject}/${imageName}:${devTag} --source=imagestreamtag"
                     sh "oc -n ${devProject} set env dc/${imageName} VERSION=\"${devTag} (${imageName}-dev)\""
                     sh "oc -n ${devProject} rollout latest dc/${imageName}"
-                    waitOnDeployment(${devProject})
+                    waitOnDeployment(devProject)
                 }
             }
         }
