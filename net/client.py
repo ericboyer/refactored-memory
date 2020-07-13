@@ -44,7 +44,7 @@ class Client:
                 print("<<< '{}'".format(response.decode('utf-8')))
                 client.close()
         except Exception:
-            print("We had issues talking talking to the server, exiting...")
+            print("We had issues talking to the server, exiting...")
             traceback.print_exc(file=sys.stdout)
             # traceback.print_stack()
             return -1

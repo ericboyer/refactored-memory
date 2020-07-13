@@ -5,6 +5,7 @@ pipeline {
         imageName = "refactored-memory"
         devProject = "${imageName}-dev"
         prodProject = "${imageName}-prod"
+        // TODO Fix devTag to start with the most recent successful build
         devTag = "0.0-0"
         prodTag = ""
         destApp     = "${imageName}-green"
@@ -25,10 +26,18 @@ pipeline {
                     sh 'python3 --version'
                     sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
+                    def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d\\.")
+                    // Set the tag for the development image: version + build number
+                    devTag  = "${version}-" + currentBuild
+                    // Set the tag for the production image: version
+                    prodTag = "${version}"
+
+                    echo "devTag: ${devTag}"
+                    echo "prodTag: ${prodTag}"
                 }
             }
         }
-        stage('Build source and build distribution') {
+        stage('Build source and build distribution artifacts') {
             steps {
                 container('python') {
                     sh 'python3 setup.py sdist bdist_wheel'
@@ -47,14 +56,12 @@ pipeline {
                 }
             }
         }
-        stage('Build and Tag OpenShift Image') {
+        stage('Build and tag OpenShift image') {
             steps {
                 container('python') {
                     // Build Image (binary build), tag Image
                     // Make sure the image name is correct in the tag!
-                    sh "oc -n ${devProject} start-build bc/${imageName}"
-                    // wait, hack for now
-                    sh "sleep 60"
+                    sh "oc -n ${devProject} start-build bc/${imageName} --wait"
                     sh "oc -n ${devProject} tag ${devProject}/${imageName}:latest ${devProject}/${imageName}:${devTag}"
                 }
             }
