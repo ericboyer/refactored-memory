@@ -76,29 +76,58 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy to development') {
             steps {
                 container('python') {
                     sh "oc -n ${devProject} set image dc/${imageName} ${imageName}=${devProject}/${imageName}:${devTag} --source=imagestreamtag"
                     sh "oc -n ${devProject} set env dc/${imageName} VERSION=\"${devTag} (${imageName}-dev)\""
                     sh "oc -n ${devProject} rollout latest dc/${imageName}"
-                    script {
-                        // Use the openshift plugin to wait for the deployment to complete
-                        openshift.withCluster() {
-                            openshift.withProject("${devProject}") {
-                                def dc = openshift.selector("dc", "${imageName}").object()
-                                def dc_version = dc.status.latestVersion
-                                def rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
-                                echo "Waiting for ReplicationController ${imageName}-${dc_version} to be ready"
-                                while (rc.spec.replicas != rc.status.readyReplicas) {
-                                    sleep 5
-                                    rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
-                                }
-                            } // withProject
-                        } // withCluster
-                    }
+                    waitOnDeployment(${devProject})
                 }
             }
         }
+        stage('Stash image in Nexus') {
+            steps {
+                container('skopeo') {
+                    sh "echo Stash image in registry"
+//                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:r3dh4t1 docker://${internalClusterRegistry}/${devProject}/${imageName}:${devTag} docker://${clusterRegistry}/${imageName}:${devTag}"
+//                    // TBD: Tag the built image with the production tag.
+//                    sh "oc -n ${prodProject} tag ${devProject}/${imageName}:${devTag} ${devProject}/${imageName}:${prodTag}"
+                }
+            }
+        }
+        stage('Execute integration tests') {
+            steps {
+                container('python') {
+                    sh "echo Do testing"
+                }
+            }
+        }
+
+        stage('Promote to production') {
+            steps {
+                container('python') {
+                    sh "echo Promote to production"
+                }
+            }
+        }
+    }
+}
+
+void waitOnDeployment(String project) {
+    script {
+        // Use the openshift plugin to wait for the deployment to complete
+        openshift.withCluster() {
+            openshift.withProject(project) {
+                def dc = openshift.selector("dc", "${imageName}").object()
+                def dc_version = dc.status.latestVersion
+                def rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
+                echo "Waiting for ReplicationController ${imageName}-${dc_version} to be ready"
+                while (rc.spec.replicas != rc.status.readyReplicas) {
+                    sleep 5
+                    rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
+                }
+            } // withProject
+        } // withCluster
     }
 }
