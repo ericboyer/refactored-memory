@@ -20,20 +20,28 @@ pipeline {
         }
     }
     stages {
+        stage('Collect version info') {
+            steps {
+                container('python') {
+                    script {
+                        def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d\\.")
+                        // Set the tag for the development image: version + build number
+                        devTag  = "${version}-${BUILD_NUMBER}"
+                        // Set the tag for the production image: version
+                        prodTag = "${version}"
+
+                        echo "devTag: ${devTag}"
+                        echo "prodTag: ${prodTag}"
+                    }
+                }
+            }
+        }
         stage('Setup Python prereqs') {
             steps {
                 container('python') {
                     sh 'python3 --version'
                     sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
-                    def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d\\.")
-                    // Set the tag for the development image: version + build number
-                    devTag  = "${version}-${BUILD_NUMBER}"
-                    // Set the tag for the production image: version
-                    prodTag = "${version}"
-
-                    echo "devTag: ${devTag}"
-                    echo "prodTag: ${prodTag}"
                 }
             }
         }
