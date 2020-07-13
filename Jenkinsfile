@@ -24,7 +24,7 @@ pipeline {
             steps {
                 container('python') {
                     script {
-                        def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d\\.")
+                        def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d.")
                         // Set the tag for the development image: version + build number
                         devTag  = "${version}-${BUILD_NUMBER}"
                         // Set the tag for the production image: version
