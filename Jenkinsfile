@@ -26,8 +26,8 @@ pipeline {
                     script {
                         def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d.")
                         // Set the tag for the development image: version + build number
-                        def withspace = "${version}-" + currentBuild.number
-                        devTag  = withspace.replaceAll("[\r\n|\n\r|\n|\r]", "")
+                        def withExtraChars = "${version}-" + currentBuild.number
+                        devTag  = withExtraChars.replaceAll("[\r\n|\n\r|\n|\r]", "")
 
                         // Set the tag for the production image: version
                         prodTag = "${version}"
@@ -78,7 +78,26 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh "echo Placeholder for deployment instructions"
+                container('python') {
+                    sh "oc -n ${devProject} set image dc/${imageName} ${imageName}=${devProject}/${imageName}:${devTag} --source=imagestreamtag"
+                    sh "oc -n ${devProject} set env dc/${imageName} VERSION=\"${devTag} (${imageName}-dev)\""
+                    sh "oc -n ${devProject} rollout latest dc/${imageName}"
+                    script {
+                        // Use the openshift plugin to wait for the deployment to complete
+                        openshift.withCluster() {
+                            openshift.withProject("${devProject}") {
+                                def dc = openshift.selector("dc", "${imageName}").object()
+                                def dc_version = dc.status.latestVersion
+                                def rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
+                                echo "Waiting for ReplicationController ${imageName}-${dc_version} to be ready"
+                                while (rc.spec.replicas != rc.status.readyReplicas) {
+                                    sleep 5
+                                    rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
+                                }
+                            } // withProject
+                        } // withCluster
+                    }
+                }
             }
         }
     }
