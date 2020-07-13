@@ -6,7 +6,7 @@ metadata:
   name: build-pod
 spec:
   containers:
-    - image: ebo-python-builder/python-builder:latest
+    - image: docker-registry.default.svc:5000/ebo-python-builder/python-builder:latest
       command:
         - cat
       env:
