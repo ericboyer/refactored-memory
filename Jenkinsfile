@@ -26,7 +26,9 @@ pipeline {
                     script {
                         def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d.")
                         // Set the tag for the development image: version + build number
-                        devTag  = "${version}-" + currentBuild.number
+                        def withspace = "${version}-" + currentBuild.number
+                        devTag  = withspace.replaceAll("[\r\n|\n\r|\n|\r]", "")
+
                         // Set the tag for the production image: version
                         prodTag = "${version}"
 
