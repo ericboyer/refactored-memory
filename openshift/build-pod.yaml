@@ -6,8 +6,21 @@ metadata:
   name: build-pod
 spec:
   containers:
-    - image: registry.redhat.io/rhel8/skopeo:8.2
-      name: skopeo
+#    - name: skopeo
+#      image: registry.redhat.io/rhel8/skopeo:8.2
+#      command:
+#        - cat
+#      env:
+#        - name: HOME
+#          value: /home/jenkins
+#      volumeMounts:
+#        - mountPath: /home/jenkins
+#          name: workspace-volume
+#          readOnly: false
+#        - mountPath: /etc/config
+#          name: config-volume
+    - name: python
+      image: docker-registry.default.svc:5000/ebo-python-builder/python-builder:latest
       command:
         - cat
       env:
@@ -19,19 +32,6 @@ spec:
           readOnly: false
         - mountPath: /etc/config
           name: config-volume
-    - image: docker-registry.default.svc:5000/ebo-python-builder/python-builder:latest
-      command:
-        - cat
-      env:
-        - name: HOME
-          value: /home/jenkins
-      volumeMounts:
-        - mountPath: /home/jenkins
-          name: workspace-volume
-          readOnly: false
-        - mountPath: /etc/config
-          name: config-volume
-      name: python
       tty: true
     - name: jnlp
       image: jenkins/jnlp-slave:latest

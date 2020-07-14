@@ -86,16 +86,16 @@ pipeline {
                 }
             }
         }
-        stage('Stash image in Nexus') {
-            steps {
-                container('skopeo') {
-                    sh "echo Stash image in registry"
-//                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:r3dh4t1 docker://${internalClusterRegistry}/${devProject}/${imageName}:${devTag} docker://${clusterRegistry}/${imageName}:${devTag}"
-//                    // TBD: Tag the built image with the production tag.
-//                    sh "oc -n ${prodProject} tag ${devProject}/${imageName}:${devTag} ${devProject}/${imageName}:${prodTag}"
-                }
-            }
-        }
+//        stage('Stash image in Nexus') {
+//            steps {
+//                container('skopeo') {
+//                    sh "echo Stash image in registry"
+////                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:r3dh4t1 docker://${internalClusterRegistry}/${devProject}/${imageName}:${devTag} docker://${clusterRegistry}/${imageName}:${devTag}"
+////                    // TBD: Tag the built image with the production tag.
+////                    sh "oc -n ${prodProject} tag ${devProject}/${imageName}:${devTag} ${devProject}/${imageName}:${prodTag}"
+//                }
+//            }
+//        }
         stage('Execute integration tests') {
             steps {
                 container('python') {
