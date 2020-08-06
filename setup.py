@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 import os
 
 with open("README.md", "r") as fh:
@@ -7,17 +7,16 @@ with open("README.md", "r") as fh:
 setup(
     name='refactored-memory',
     version='0.0.{}'.format(os.environ["BUILD_NUMBER"]),
-    author="Black Label",
+    author="eboyer",
     author_email="eboyer@redhat.com",
+    description="Python client/server application to demonstrate pipelines on OpenShift.",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    install_requires=["docopt~=0.6.2", "Flask~=1.1.2"],
     url="https://github.com/ericboyer/refactored-memory.git",
-    packages=["net"],
-    # packages=setuptools.find_packages(),
-    # include_package_data=True,
-    license="MIT",
+    packages=find_namespace_packages(include="refactored-memory.*"),
     classifiers=[
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Python Software Foundation License"
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
@@ -26,6 +25,7 @@ setup(
         'console_scripts': [
             'refactored-memory-server = net.server:main',
             'refactored-memory-client = net.client:main',
+            'refactored-memory-web-client = web.ui:main'
         ],
     }
 )

@@ -35,10 +35,10 @@ class Client:
 
     def connect(self):
         # create an ipv4 (AF_INET) socket object using the tcp protocol (SOCK_STREAM)
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # connect the client
-        client.connect((self.server_ip, self.server_port))
-        return client
+        client_socket.connect((self.server_ip, self.server_port))
+        return client_socket
 
     def run(self):
         try:
@@ -47,9 +47,9 @@ class Client:
                 text = input("Enter text: ")
                 if (text == "quit") or (text == "q"):
                     break
-                    
-                client = self.connect()
-                self.send(client, text)
+
+                client_socket = self.connect()
+                self.send(client_socket, text)
         except Exception:
             print("We had issues talking to the server, exiting...")
             traceback.print_exc(file=sys.stdout)
