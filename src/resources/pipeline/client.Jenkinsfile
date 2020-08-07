@@ -16,7 +16,7 @@ pipeline {
             cloud "openshift"
             label "build-pod"
             serviceAccount "jenkins"
-            yamlFile "openshift/build-pod.yaml"
+            yamlFile "src/resources/openshift/build-pod.yaml"
         }
     }
     stages {

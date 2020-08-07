@@ -2,6 +2,8 @@ Notes on OpenShift setup required to support this app (assuming jenkins and supp
 ci/cd infrastructure is deployed)
 
 ## Initialize CI/CD:
+> namespace:  ebo-cicd
+
 - Deploy GitLab (runners will be deployed later)
     ```
     oc new-app --name gitlab --docker-image gitlab/gitlab-ce:latest
@@ -20,7 +22,7 @@ ci/cd infrastructure is deployed)
     oc expose svc/nexusrepo-sonatype-nexus-service
     ```
 
-- Deploy Jenkins
+- Deploy Jenkins and update plugins (manually)
 
     `oc new-app --template jenkins-persistent -p VOLUME_CAPACITY=2G`
     
@@ -40,7 +42,7 @@ ci/cd infrastructure is deployed)
 
 - Create pipeline buildconfig:
 
-`oc new-build --name refactored-memory-pipeline --strategy pipeline https://github.com/ericboyer/refactored-memory.git#master`
+`oc -n ebo-cicd new-build --name refactored-memory-pipeline --strategy pipeline https://github.com/ericboyer/refactored-memory.git#master`
 
 > Add secrets if repo is private
 

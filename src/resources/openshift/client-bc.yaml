@@ -1,0 +1,23 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: refactored-memory-client-pipeline
+  name: refactored-memory-client-pipeline
+  namespace: ebo-cicd
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: {}
+  output: {}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    git:
+      ref: feature/webui
+      uri: 'https://github.com/ericboyer/refactored-memory.git'
+    type: Git
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: src/resources/pipeline/client.Jenkinsfile
+    type: JenkinsPipeline
