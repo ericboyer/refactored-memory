@@ -9,16 +9,17 @@ ENV nexus_hostname=${NEXUS_HOSTNAME}
 
 # Server bind port
 EXPOSE ${port}
-
+WORKDIR /app
 # Add runtime dependencies
-ADD requirements.txt .
+ADD ../../../requirements.txt .
 
 # Install package
-RUN echo "port=${port}" && \
-    echo "repo=${repo}" && \
-    echo "nexus_hostname=${nexus_hostname}" && \
-    pip install -r requirements.txt && \
-    pip install refactored-memory --trusted-host ${nexus_hostname} -i http://${nexus_hostname}/${repo}
+RUN pip install -r requirements.txt && \
+    pip install refactored-memory \
+        --trusted-host ${nexus_hostname} \
+        -i http://${nexus_hostname}/${repo}
+
+USER 1001
 
 # BIND_PORT is optional as it's defined in the pod's env and made available via configmap; being explicit here
 CMD refactored-memory-server --port=${port}

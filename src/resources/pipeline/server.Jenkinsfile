@@ -2,9 +2,9 @@
 
 pipeline {
     environment {
-        imageName = "refactored-memory"
-        devProject = "${imageName}-dev"
-        prodProject = "${imageName}-prod"
+        imageName = "refactored-memory-server"
+        devProject = "refactored-memory-dev"
+        prodProject = "refactored-memory-prod"
         // TODO Fix devTag to start with the most recent successful build
         devTag = "0.0-0"
         prodTag = ""
@@ -20,7 +20,7 @@ pipeline {
         }
     }
     stages {
-        stage('Collect version info') {
+        stage('Configure Prereqs') {
             steps {
                 container('python') {
                     script {
@@ -35,38 +35,42 @@ pipeline {
                         echo "devTag: ${devTag}"
                         echo "prodTag: ${prodTag}"
                     }
-                }
-            }
-        }
-        stage('Setup Python prereqs') {
-            steps {
-                container('python') {
+
                     sh 'python3 --version'
                     sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
                 }
             }
         }
-        stage('Build source and build distribution artifacts') {
+//         stage('Setup Python prereqs') {
+//             steps {
+//                 container('python') {
+//                     sh 'python3 --version'
+//                     sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
+//                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
+//                 }
+//             }
+//         }
+        stage('Package') {
             steps {
                 container('python') {
                     sh 'python3 setup.py sdist bdist_wheel'
                 }
             }
         }
-        stage('Test stuff') {
+        stage('Unit Test') {
             steps {
                 sh 'echo Placeholder for unit tests'
             }
         }
-        stage('Publish to Nexus') {
+        stage('Archive') {
             steps {
                 container('python') {
                     sh 'python3 -m twine upload --config-file /etc/config/.pypirc -r pypi-internal dist/*'
                 }
             }
         }
-        stage('Build and tag OpenShift image') {
+        stage('Build and tag OpenShift container') {
             steps {
                 container('python') {
                     // Build Image (binary build), tag Image
@@ -76,7 +80,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to development') {
+        stage('Deploy to Dev') {
             steps {
                 container('python') {
                     sh "oc -n ${devProject} set image dc/${imageName} ${imageName}=${devProject}/${imageName}:${devTag} --source=imagestreamtag"
@@ -96,7 +100,7 @@ pipeline {
 //                }
 //            }
 //        }
-        stage('Execute integration tests') {
+        stage('Integration Test') {
             steps {
                 container('python') {
                     sh "echo Do testing"
@@ -104,7 +108,7 @@ pipeline {
             }
         }
 
-        stage('Promote to production') {
+        stage('Promote to Prod') {
             steps {
                 container('python') {
                     sh "echo Promote to production"
