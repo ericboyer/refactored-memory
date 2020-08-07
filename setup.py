@@ -14,7 +14,9 @@ setup(
     long_description_content_type="text/markdown",
     # install_requires=["docopt~=0.6.2", "Flask~=1.1.2"],
     url="https://github.com/ericboyer/refactored-memory.git",
-    packages=find_namespace_packages(include="refactored-memory.*"),
+    package_dir={"": "src"},
+    # packages=find_namespace_packages(include="refactored-memory.*"),
+    packages=find_namespace_packages(where="src"),
     classifiers=[
         "License :: OSI Approved :: Python Software Foundation License"
         "Programming Language :: Python :: 3",
