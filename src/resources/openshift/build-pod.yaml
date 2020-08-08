@@ -47,4 +47,4 @@ spec:
       name: workspace-volume
     - name: config-volume
       configMap:
-        name: pypirc-config
+        name: pipeline-config

@@ -15,7 +15,7 @@ spec:
   source:
     git:
       ref: feature/webui
-      uri: 'https://github.com/ericboyer/refactored-memory.git'
+      uri: 'https://github.cericboyerom//refactored-memory.git'
     type: Git
   strategy:
     jenkinsPipelineStrategy:
