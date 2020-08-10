@@ -31,6 +31,13 @@ ci/cd infrastructure is deployed)
     oc new-app --docker-image=sonarqube
     oc expose svc/sonarqube
     ```
+  
+- Deploy custom `python-builder`
+    ```
+    oc new-project ebo-python-builder
+    oc create secret generic githubssh --from-file=ssh-privatekey=/Users/eboyer/github
+    oc process -f https://raw.githubusercontent.com/rht-ccsd/sitr/feature/python-runtime/openshift/python-builder/python-builder.yaml | oc create -f -
+    ```
 
 ## Setup application
 - Create project:
@@ -42,9 +49,20 @@ ci/cd infrastructure is deployed)
 
 - Create pipeline buildconfig:
 
-`oc -n ebo-cicd new-build --name refactored-memory-pipeline --strategy pipeline https://github.com/ericboyer/refactored-memory.git#master`
+    `oc -n ebo-cicd new-build --name refactored-memory-pipeline --strategy pipeline https://github.com/ericboyer/refactored-memory.git#master`
 
 > Add secrets if repo is private
+
+Create configmap for build:
+
+    ```
+    oc create configmap pipeline-config --from-file=/Users/eboyer/.pypirc \
+        --from-literal=BIND_PORT=8088 \
+        --from-literal=PYPI_GROUP_REPO=http://nexus-ebo-cicd.apps.ccsd3.rht-labs.com/repository/pypi-public/simple
+    ```
+or
+
+`oc -n ebo-cicd create cm pipeline-config --from-file=src/resources/openshift/cm.yaml`
 
 Give jenkins access to the dev and prod projects:
 ```
@@ -52,9 +70,6 @@ oc policy add-role-to-user edit system:serviceaccount:ebo-cicd:jenkins -n ${proj
 oc policy add-role-to-user edit system:serviceaccount:ebo-cicd:jenkins -n ${project-prod}
 ```
 
-Create configmap for build:
-
-```oc create configmap refactored-memory --from-file=/Users/eboyer/.pypirc --from-literal=BIND_PORT=8088 --from-literal=PYPI_GROUP_REPO=http://nexus-ebo-cicd.apps.ccsd3.rht-labs.com/repository/pypi-public/simple```
 
 Create app deployment config:
 
