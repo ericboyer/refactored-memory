@@ -21,6 +21,7 @@ ci/cd infrastructure is deployed)
     oc policy add-role-to-user cluster-admin -z nxrm-operator-certified
     oc expose svc/nexusrepo-sonatype-nexus-service
     ```
+  > Node: Don't forget to configure pypi (hosted -> pypi-dev, group -> pypi-public (w/pypi-dev))
 
 - Deploy Jenkins and update plugins (manually)
 
@@ -36,7 +37,11 @@ ci/cd infrastructure is deployed)
     ```
     oc new-project ebo-python-builder
     oc create secret generic githubssh --from-file=ssh-privatekey=/Users/eboyer/github
-    oc process -f https://raw.githubusercontent.com/rht-ccsd/sitr/feature/python-runtime/openshift/python-builder/python-builder.yaml | oc create -f -
+    oc process -f https://raw.githubusercontent.com/rht-ccsd/sitr/feature/python-runtime/openshift/python-builder/python-builder.yaml \
+        | oc create -f -
+    oc policy add-role-to-group  \
+        -n ${RHT_OCP4_DEV_USER}-common system:image-puller \
+        system:serviceaccounts:${RHT_OCP4_DEV_USER}-expose-image
     ```
 
 ## Setup application
@@ -62,7 +67,7 @@ Create configmap for build:
     ```
 or
 
-`oc -n ebo-cicd create cm pipeline-config --from-file=src/resources/openshift/cm.yaml`
+`oc -n ebo-cicd create cm pipeline-config -f src/resources/openshift/cm.yaml`
 
 Give jenkins access to the dev and prod projects:
 ```

@@ -13,7 +13,7 @@ ENV namespace=${NAMESPACE}
 EXPOSE ${port}
 WORKDIR /app
 # Add runtime dependencies
-ADD ../../../requirements.txt .
+ADD requirements.txt .
 
 # Install app and dependencies
 RUN pip install -r requirements.txt && \
