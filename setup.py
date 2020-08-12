@@ -25,9 +25,9 @@ setup(
     python_requires='>=3.8',
     entry_points={
         'console_scripts': [
-            'refactored-memory-server = net.server:main',
-            'refactored-memory-client = net.client:main',
-            'refactored-memory-web-client = web.ui:main'
+            'refactored-memory-server = refactored_memory.net.server:main',
+            'refactored-memory-client = refactored_memory.net.client:main',
+            'refactored-memory-rest-client = refactored_memory.web.ui:main'
         ],
     }
 )

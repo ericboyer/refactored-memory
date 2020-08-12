@@ -24,4 +24,4 @@ RUN pip install -r requirements.txt && \
 USER 1001
 
 # BIND_PORT is optional as it's defined in the pod's env and made available via configmap; being explicit here
-CMD refactored-memory-client --server_port=${port} --server_ip=refactored-memory-server.${namespace}.svc.cluster.local
+CMD refactored-memory-rest-client --server_port=${port} --server_ip=refactored-memory-server.${namespace}.svc.cluster.local

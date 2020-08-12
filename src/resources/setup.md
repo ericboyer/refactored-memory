@@ -76,10 +76,12 @@ oc policy add-role-to-user edit system:serviceaccount:ebo-cicd:jenkins -n ${proj
 ```
 
 
-Create app deployment config:
+Create app deployment config, imagestream, svc, and route (client only):
 
 ```oc new-app refactored-memory-dev/refactored-memory:0.0-0 --allow-missing-imagestream-tags=true -n refactored-memory-dev```
 
 Disable automatic deployments (for example, ImageStream change event)
 
 Add readiness and liveness health checks, if applicable.
+
+- Enable/configure github webhooks
