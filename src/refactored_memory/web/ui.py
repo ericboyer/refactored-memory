@@ -7,7 +7,7 @@ Usage:
 from flask import Flask
 from flask import render_template
 from flask import request
-from net import client
+from refactored_memory.net.client import Client
 
 app = Flask(__name__)
 
