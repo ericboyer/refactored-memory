@@ -27,7 +27,7 @@ setup(
         'console_scripts': [
             'refactored-memory-server = refactored_memory.net.server:main',
             'refactored-memory-client = refactored_memory.net.client:main',
-            'refactored-memory-rest-client = refactored_memory.web.ui:main'
+            'refactored-memory-rest-client = refactored_memory.web.app:main'
         ],
     }
 )

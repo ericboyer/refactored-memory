@@ -18,20 +18,22 @@ def main():
     c.run()
 
 
+def send(client, text):
+    # print text to send
+    print(">>> '{}'".format(text))
+    # send the data
+    client.sendall(text.encode('utf-8'))
+    # receive the response data (4096 is recommended buffer size)
+    response = client.recv(4096).decode('utf-8')
+    print("<<< '{}'".format(response))
+    client.close()
+    return response
+
+
 class Client:
     def __init__(self, ip, port):
         self.server_ip = ip
         self.server_port = port
-
-    def send(self, client, text):
-        # print text to send
-        print(">>> '{}'".format(text))
-        # send the data
-        client.sendall(text.encode('utf-8'))
-        # receive the response data (4096 is recommended buffer size)
-        response = client.recv(4096)
-        print("<<< '{}'".format(response.decode('utf-8')))
-        client.close()
 
     def connect(self):
         # create an ipv4 (AF_INET) socket object using the tcp protocol (SOCK_STREAM)
@@ -49,7 +51,7 @@ class Client:
                     break
 
                 client_socket = self.connect()
-                self.send(client_socket, text)
+                send(client_socket, text)
         except Exception:
             print("We had issues talking to the server, exiting...")
             traceback.print_exc(file=sys.stdout)

@@ -9,8 +9,6 @@ ENV nexus_hostname=${NEXUS_HOSTNAME}
 ARG namespace
 ENV namespace=${NAMESPACE}
 
-# Server bind port
-EXPOSE ${port}
 WORKDIR /app
 # Add runtime dependencies
 ADD requirements.txt .
@@ -23,5 +21,9 @@ RUN pip install -r requirements.txt && \
 
 USER 1001
 
+EXPOSE 5000
+ENV SERVER_PORT=${port}
+ENV SERVER_IP=${refactored-memory-server.${namespace}.svc.cluster.local}
 # BIND_PORT is optional as it's defined in the pod's env and made available via configmap; being explicit here
-CMD refactored-memory-rest-client --server_port=${port} --server_ip=refactored-memory-server.${namespace}.svc.cluster.local
+CMD refactored-memory-rest-client
+#ENTRYPOINT FLASK_APP=refactored_memory/web/app.py flask run --host=0.0.0.0
