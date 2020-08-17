@@ -7,11 +7,9 @@ ENV repo=${PYPI_GROUP_REPO}
 ARG nexus_hostname
 ENV nexus_hostname=${NEXUS_HOSTNAME}
 
-# Server bind port
-EXPOSE ${port}
 WORKDIR /app
 # Add runtime dependencies
-ADD ../../../requirements.txt .
+ADD requirements.txt .
 
 # Install package
 RUN pip install -r requirements.txt && \
@@ -21,5 +19,6 @@ RUN pip install -r requirements.txt && \
 
 USER 1001
 
+EXPOSE ${port}
 # BIND_PORT is optional as it's defined in the pod's env and made available via configmap; being explicit here
 CMD refactored-memory-server --port=${port}

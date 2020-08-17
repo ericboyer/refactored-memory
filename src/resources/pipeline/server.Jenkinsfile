@@ -42,15 +42,6 @@ pipeline {
                 }
             }
         }
-//         stage('Setup Python prereqs') {
-//             steps {
-//                 container('python') {
-//                     sh 'python3 --version'
-//                     sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
-//                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
-//                 }
-//             }
-//         }
         stage('Package') {
             steps {
                 container('python') {

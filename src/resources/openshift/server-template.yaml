@@ -12,7 +12,7 @@ objects:
       name: ${APP_NAME}
       namespace: NAMESPACE
     spec:
-      clusterIP: {}
+      clusterIP: null
       ports:
         - name: 8088-tcp
           port: 8088
@@ -38,15 +38,6 @@ objects:
     spec:
       lookupPolicy:
         local: false
-      tags:
-        - from:
-            kind: ImageStreamImage
-            name: ${APP_NAME}
-            namespace: ${NAMESPACE}
-          importPolicy: {}
-          name: 0.0-0
-          referencePolicy:
-            type: Source
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
@@ -75,7 +66,7 @@ objects:
         type: Git
       strategy:
         dockerStrategy:
-          dockerfilePath: src/resources/container/client.Dockerfile
+          dockerfilePath: src/resources/container/server.Dockerfile
           env:
             - name: BIND_PORT
               valueFrom:
@@ -97,14 +88,8 @@ objects:
         type: Docker
       successfulBuildsHistoryLimit: 5
       triggers:
-        - generic:
-            secretReference:
-              name: ${APP_NAME}-generic-webhook-secret
-          type: Generic
-        - github:
-            secretReference:
-              name: ${APP_NAME}-github-webhook-secret
-          type: GitHub
+        - generic: {}
+        - github: {}
         - type: ConfigChange
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
@@ -148,12 +133,12 @@ objects:
                   configMapKeyRef:
                     key: BIND_PORT
                     name: refactored-memory
-            image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}
-            imagePullPolicy: Always
-            name: ${APP_NAME}
-            resources: {}
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
+              image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}
+              imagePullPolicy: Always
+              name: ${APP_NAME}
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -174,7 +159,7 @@ objects:
         - type: ConfigChange
 parameters:
   - name: APP_NAME
-    value: refactored-memory-client
+    value: refactored-memory-server
   - name: REPO
     value: https://github.com/ericboyer/refactored-memory.git
   - name: BRANCH
