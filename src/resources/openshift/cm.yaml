@@ -11,6 +11,6 @@ data:
     repository: http://nexusrepo-sonatype-nexus-service-ebo-cicd.apps.ccsd4.na-1.rht-labs.com/repository/pypi-dev/
     username: admin
     password: admin123
-  BIND_PORT: "8088"
+  BIND_PORT: 8088
   NEXUS_HOSTNAME: nexusrepo-sonatype-nexus-service-ebo-cicd.apps.ccsd4.na-1.rht-labs.com
   PYPI_GROUP_REPO: repository/pypi-public/simple
