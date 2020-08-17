@@ -15,13 +15,14 @@ from refactored_memory.net.client import Client, send
 
 SERVER_IP: Final = os.environ['SERVER_IP']
 SERVER_PORT: Final = os.environ['SERVER_PORT']
+RUN_PORT: Final = os.environ['FLASK_RUN_PORT']
 
 app = Flask(__name__)
 
 
 def main():
     print("initializing server connection @ {}:{}".format(SERVER_IP, SERVER_PORT))
-    app.run()
+    app.run(port=RUN_PORT)
 
 
 @app.route('/health')
