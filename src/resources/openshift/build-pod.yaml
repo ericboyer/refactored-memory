@@ -6,19 +6,19 @@ metadata:
   name: build-pod
 spec:
   containers:
-#    - name: skopeo
-#      image: registry.redhat.io/rhel8/skopeo:8.2
-#      command:
-#        - cat
-#      env:
-#        - name: HOME
-#          value: /home/jenkins
-#      volumeMounts:
-#        - mountPath: /home/jenkins
-#          name: workspace-volume
-#          readOnly: false
-#        - mountPath: /etc/config
-#          name: config-volume
+    - name: skopeo
+      image: registry.redhat.io/rhel8/skopeo:latest
+      command:
+        - cat
+      env:
+        - name: HOME
+          value: /home/jenkins
+      volumeMounts:
+        - mountPath: /home/jenkins
+          name: workspace-volume
+          readOnly: false
+        - mountPath: /etc/config
+          name: config-volume
     - name: python
       image: image-registry.openshift-image-registry.svc:5000/ebo-python-builder/python-builder:latest
       command:
