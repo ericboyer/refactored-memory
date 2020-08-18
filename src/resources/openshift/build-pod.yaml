@@ -9,7 +9,7 @@ spec:
     - name: skopeo
       image: image-registry.openshift-image-registry.svc:5000/ebo-cicd/skopeo
       command:
-        - cat
+        - /bin/bash
       env:
         - name: HOME
           value: /home/jenkins
