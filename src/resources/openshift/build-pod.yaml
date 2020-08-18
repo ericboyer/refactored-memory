@@ -49,4 +49,4 @@ spec:
       configMap:
         name: pipeline-config
   imagePullSecrets:
-    name: redhatio
+    - name: redhatio
