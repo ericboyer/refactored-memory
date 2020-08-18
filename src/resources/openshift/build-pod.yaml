@@ -8,8 +8,17 @@ spec:
   containers:
     - name: skopeo
       image: image-registry.openshift-image-registry.svc:5000/ebo-cicd/skopeo
-      command:
-        - /bin/bash
+      args:
+        - /bin/sh
+        - -c
+        - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+      livenessProbe:
+        exec:
+          command:
+            - cat
+            - /tmp/healthy
+        initialDelaySeconds: 5
+        periodSeconds: 5
       env:
         - name: HOME
           value: /home/jenkins
