@@ -46,10 +46,11 @@ ci/cd infrastructure is deployed)
   
 - Enable build pod to pull secrets:
     ```
-    oc create secret generic redhatio \
+    #oc create secret generic redhatio \
         --from-file=.dockerconfigjson=/Users/eboyer/.docker/config.json \
         --type=kubernetes.io/dockerconfigjson -n ebo-cicd
-    oc secrets link builder redhatio -n ebo-cicd
+    #oc secrets link builder redhatio -n ebo-cicd
+    oc import-image rhel8/skopeo --from=registry.redhat.io/rhel8/skopeo --confirm -n ebo-cicd
     ```
 
 ## Setup application

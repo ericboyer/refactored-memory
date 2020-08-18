@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: skopeo
-      image: registry.redhat.io/rhel8/skopeo:latest
+      image: image-registry.openshift-image-registry.svc:5000/ebo-cicd/skopeo
       command:
         - cat
       env:
@@ -48,5 +48,3 @@ spec:
     - name: config-volume
       configMap:
         name: pipeline-config
-#  imagePullSecrets:
-#    - name: redhatio
