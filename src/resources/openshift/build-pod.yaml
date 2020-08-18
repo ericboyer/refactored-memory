@@ -48,3 +48,5 @@ spec:
     - name: config-volume
       configMap:
         name: pipeline-config
+  imagePullSecrets:
+    name: redhatio
