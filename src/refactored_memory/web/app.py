@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 def main():
     print("initializing server connection @ {}:{}".format(SERVER_IP, SERVER_PORT))
-    app.run(port=RUN_PORT)
+    app.run(ip='0.0.0.0', port=RUN_PORT)
 
 
 @app.route('/health')
