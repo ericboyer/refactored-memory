@@ -71,19 +71,19 @@ pipeline {
             }
         }
         stage('Build App Container(s)') {
-            parallel {
-                container('python') {
-                    timestamps {
-                        stage("Build ${backendImageName}") {
+            container('python') {
+                parallel {
+                    stage("Build ${backendImageName}") {
+                        timestamps {
                             // build backend container and tag with current version
                             sh "oc -n ${devProject} start-build bc/${backendImageName} --wait --follow"
                             sh "oc -n ${devProject} tag ${devProject}/${backendImageName}:latest ${devProject}/${backendImageName}:${devTag}"
                         }
-                        stage("Build ${frontendImageName}") {
-                            // build frontend container and tag with current version
-                            sh "oc -n ${devProject} start-build bc/${frontendImageName} --wait --follow"
-                            sh "oc -n ${devProject} tag ${devProject}/${frontendImageName}:latest ${devProject}/${frontendImageName}:${devTag}"
-                        }
+                    }
+                    stage("Build ${frontendImageName}") {
+                        // build frontend container and tag with current version
+                        sh "oc -n ${devProject} start-build bc/${frontendImageName} --wait --follow"
+                        sh "oc -n ${devProject} tag ${devProject}/${frontendImageName}:latest ${devProject}/${frontendImageName}:${devTag}"
                     }
                 }
             }
