@@ -1,53 +1,26 @@
+---
 apiVersion: v1
 kind: Template
+metadata:
+  name: refactored-memory-server
+  annotations:
+    app.openshfit.io/display-name: Deployment template for server-side python application demonstration.
 objects:
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      annotations:
-        app.openshift.io/vcs-ref: ${BRANCH}
-        app.openshift.io/vcs-uri: ${REPO}
-      labels:
-        app: ${APP_NAME}
-      name: ${APP_NAME}
-      namespace: NAMESPACE
-    spec:
-      clusterIP: null
-      ports:
-        - name: 8088-tcp
-          port: 8088
-          protocol: TCP
-          targetPort: 8088
-      selector:
-        app: ${APP_NAME}
-        deploymentconfig: ${APP_NAME}
-      sessionAffinity: None
-      type: ClusterIP
-    status:
-      loadBalancer: {}
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      annotations:
-        app.openshift.io/vcs-ref: ${BRANCH}
-        app.openshift.io/vcs-uri: ${REPO}
       labels:
         app: ${APP_NAME}
       name: ${APP_NAME}
-      namespace: ${NAMESPACE}
     spec:
       lookupPolicy:
         local: false
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
-      annotations:
-        app.openshift.io/vcs-ref: ${BRANCH}
-        app.openshift.io/vcs-uri: ${REPO}
       labels:
         app: ${APP_NAME}
       name: ${APP_NAME}
-      namespace: ${NAMESPACE}
     spec:
       failedBuildsHistoryLimit: 5
       nodeSelector: null
@@ -88,22 +61,45 @@ objects:
         type: Docker
       successfulBuildsHistoryLimit: 5
       triggers:
-        - generic: {}
-        - github: {}
+        - generic:
+            secretReference:
+              name: ${WEBHOOK_SECRET}
+          type: Generic
+        - github:
+            secretReference:
+              name: ${WEBHOOK_SECRET}
+          type: GitHub
         - type: ConfigChange
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}
+      namespace: NAMESPACE
+    spec:
+      ports:
+        - name: 8088-tcp
+          port: 8088
+          protocol: TCP
+          targetPort: 8088
+      selector:
+        app: ${APP_NAME}
+        deploymentconfig: ${APP_NAME}
+      sessionAffinity: None
+      type: ClusterIP
+    status:
+      loadBalancer: {}
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:
-      annotations:
-        app.openshift.io/vcs-ref: ${BRANCH}
-        app.openshift.io/vcs-uri: ${REPO}
       labels:
         app: ${APP_NAME}
       name: ${APP_NAME}
       namespace: ${NAMESPACE}
     spec:
       replicas: 1
-      revisionHistoryLimit: 10
+      revisionHistoryLimit: 5
       selector:
         app: ${APP_NAME}
         deploymentconfig: ${APP_NAME}
@@ -119,7 +115,6 @@ objects:
         type: Rolling
       template:
         metadata:
-          creationTimestamp: null
           labels:
             app: ${APP_NAME}
             deploymentconfig: ${APP_NAME}
@@ -127,7 +122,7 @@ objects:
           containers:
             - env:
               - name: VERSION
-                value: 0.0-21 (${APP_NAME}-dev)
+                value: 0.0-0 (${APP_NAME}-dev)
               - name: PORT
                 valueFrom:
                   configMapKeyRef:
@@ -145,24 +140,21 @@ objects:
           securityContext: {}
           terminationGracePeriodSeconds: 30
       test: false
-      triggers:
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${APP_NAME}
-            from:
-              kind: ImageStreamTag
-              name: ${APP_NAME}:latest
-              namespace: ${NAMESPACE}
-            lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}
-          type: ImageChange
-        - type: ConfigChange
+      triggers: []
 parameters:
   - name: APP_NAME
     value: refactored-memory-server
+    description: The application name that all objects will be assigned.
   - name: REPO
     value: https://github.com/ericboyer/refactored-memory.git
+    description: The source repository
   - name: BRANCH
-    value: feature/webui
+    value: master
+    description: The repository branch to reference
   - name: NAMESPACE
     value: refactored-memory-dev
+    description: The namespace of the development version of this application
+  - name: WEBHOOK_SECRET
+    generate: expression
+    from: '[a-zA-Z0-9]{8}'
+    description: The generated secret for webhooks
