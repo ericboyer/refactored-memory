@@ -29,10 +29,6 @@ oc process -f openshift/server-template.yaml -p NAMESPACE="$DEV_PROJECT" | oc -n
 oc process -f openshift/client-template.yaml -p NAMESPACE="$DEV_PROJECT" | oc -n "$DEV_PROJECT" create -f -
 
 # create and start pipeline build
-for component in server client
-do
-  # create jenkins pipelines
-  oc process -f openshift/pipeline.yaml -p APP_COMPONENT=$component | oc -n $CICD_PROJECT create -f -
-  # kick off first pipeline build
-  oc -n $CICD_PROJECT start-build $(oc get bc -n $CICD_PROJECT | grep $component | awk '{print $1}')
-done
+oc process -f openshift/pipeline.yaml -p BRANCH="feature/7-rework-pipeline" | oc -n $CICD_PROJECT create -f -
+# kick off first pipeline build
+oc -n $CICD_PROJECT start-build refactored-memory

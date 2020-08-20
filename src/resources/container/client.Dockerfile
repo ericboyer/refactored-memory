@@ -25,6 +25,6 @@ ENV SERVER_PORT=${port}
 ENV SERVER_IP=refactored-memory-server.${namespace}.svc.cluster.local
 ENV FLASK_RUN_PORT=8080
 
-EXPOSE 8080
+EXPOSE ${FLASK_RUN_PORT}
 
 CMD refactored-memory-rest-client
