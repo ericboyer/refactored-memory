@@ -71,9 +71,9 @@ pipeline {
             }
         }
         stage('Build App Container(s)') {
-            container('python') {
-                timestamps {
-                    parallel{
+            parallel {
+                container('python') {
+                    timestamps {
                         stage("Build ${backendImageName}") {
                             // build backend container and tag with current version
                             sh "oc -n ${devProject} start-build bc/${backendImageName} --wait --follow"
