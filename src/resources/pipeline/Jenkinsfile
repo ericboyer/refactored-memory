@@ -116,20 +116,20 @@ pipeline {
         stage('Integration Test') {
             steps {
                 container('python') {
-                    sh "echo Placeholder for integration testing (using roboframework)"
+                    sh 'echo Placeholder for integration testing with robotframework'
                 }
             }
         }
-        stage('Stash image in Nexus') {
-            steps {
-                container('skopeo') {
-                    sh "echo Placeholder for Stash image in registry"
+//        stage('Stash image in Nexus') {
+//            steps {
+//                container('skopeo') {
+//                    sh 'echo Placeholder for Stash image in registry'
 //                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:r3dh4t1 docker://${internalClusterRegistry}/${devProject}/${imageName}:${devTag} docker://${clusterRegistry}/${imageName}:${devTag}"
 //                    // TBD: Tag the built image with the production tag.
 //                    sh "oc -n ${prodProject} tag ${devProject}/${imageName}:${devTag} ${devProject}/${imageName}:${prodTag}"
-                }
-            }
-        }
+//                }
+//            }
+//        }
     }
 }
 
