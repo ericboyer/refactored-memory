@@ -71,19 +71,27 @@ pipeline {
             }
         }
         stage('Build App Container(s)') {
-            container('python') {
-                parallel {
-                    stage("Build ${backendImageName}") {
-                        timestamps {
-                            // build backend container and tag with current version
-                            sh "oc -n ${devProject} start-build bc/${backendImageName} --wait --follow"
-                            sh "oc -n ${devProject} tag ${devProject}/${backendImageName}:latest ${devProject}/${backendImageName}:${devTag}"
+            parallel {
+                stage("Build backend") {
+                    steps {
+                        container('python') {
+                            timestamps {
+                                // build backend container and tag with current version
+                                sh "oc -n ${devProject} start-build bc/${backendImageName} --wait --follow"
+                                sh "oc -n ${devProject} tag ${devProject}/${backendImageName}:latest ${devProject}/${backendImageName}:${devTag}"
+                            }
                         }
                     }
-                    stage("Build ${frontendImageName}") {
-                        // build frontend container and tag with current version
-                        sh "oc -n ${devProject} start-build bc/${frontendImageName} --wait --follow"
-                        sh "oc -n ${devProject} tag ${devProject}/${frontendImageName}:latest ${devProject}/${frontendImageName}:${devTag}"
+                }
+                stage("Build frontend") {
+                    steps {
+                        container('python') {
+                            timestamps {
+                                // build frontend container and tag with current version
+                                sh "oc -n ${devProject} start-build bc/${frontendImageName} --wait --follow"
+                                sh "oc -n ${devProject} tag ${devProject}/${frontendImageName}:latest ${devProject}/${frontendImageName}:${devTag}"
+                            }
+                        }
                     }
                 }
             }
