@@ -10,8 +10,8 @@ objects:
     kind: BuildConfig
     metadata:
       labels:
-        build: ${NAME}-${APP_COMPONENT}
-      name: ${NAME}-${APP_COMPONENT}
+        build: ${NAME}
+      name: ${NAME}
     spec:
       failedBuildsHistoryLimit: 5
       nodeSelector: {}
@@ -26,15 +26,12 @@ objects:
         type: Git
       strategy:
         jenkinsPipelineStrategy:
-          jenkinsfilePath: src/resources/pipeline/${APP_COMPONENT}.Jenkinsfile
+          jenkinsfilePath: src/resources/pipeline/Jenkinsfile
         type: JenkinsPipeline
 parameters:
   - name: NAME
     value: refactored-memory
     description: The application name that all objects will be assigned.
-  - name: APP_COMPONENT
-    value: server
-    description: The component of the app e.g., server, client
   - name: REPO
     value: https://github.com/ericboyer/refactored-memory.git
     description: The source repository

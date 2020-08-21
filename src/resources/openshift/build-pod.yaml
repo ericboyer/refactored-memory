@@ -6,28 +6,35 @@ metadata:
   name: build-pod
 spec:
   containers:
-    - name: skopeo
-      image: image-registry.openshift-image-registry.svc:5000/ebo-cicd/skopeo
-      args:
-        - /bin/sh
-        - -c
-        - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
-      livenessProbe:
-        exec:
-          command:
-            - cat
-            - /tmp/healthy
-        initialDelaySeconds: 5
-        periodSeconds: 5
-      env:
-        - name: HOME
-          value: /home/jenkins
-      volumeMounts:
-        - mountPath: /home/jenkins
-          name: workspace-volume
-          readOnly: false
-        - mountPath: /etc/config
-          name: config-volume
+#    - name: skopeo
+#      image: image-registry.openshift-image-registry.svc:5000/ebo-cicd/skopeo:latest
+#      args:
+#        - /bin/sh
+#        - -c
+#        - 'touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600'
+#      livenessProbe:
+#        exec:
+#          command:
+#            - echo
+#            - "healthy"
+#        initialDelaySeconds: 5
+#        periodSeconds: 5
+#      readinessProbe:
+#        exec:
+#          command:
+#            - echo
+#            - "healthy"
+#        initialDelaySeconds: 5
+#        periodSeconds: 5
+#      env:
+#        - name: HOME
+#          value: /home/jenkins
+#      volumeMounts:
+#        - mountPath: /home/jenkins
+#          name: workspace-volume
+#          readOnly: false
+#        - mountPath: /etc/config
+#          name: config-volume
     - name: python
       image: image-registry.openshift-image-registry.svc:5000/ebo-python-builder/python-builder:latest
       command:
