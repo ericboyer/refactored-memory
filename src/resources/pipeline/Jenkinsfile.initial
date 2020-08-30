@@ -1,0 +1,118 @@
+pipeline {
+    environment {
+        frontendImageName = "refactored-memory-frontend"
+        backendImageName = "refactored-memory-backend"
+        devProject = "refactored-memory-dev"
+        prodProject = "refactored-memory-prod"
+        // TODO Fix devTag to start with the most recent successful build
+        devTag = "0.0-0"
+        prodTag = ""
+        destApp = "${imageName}-green"
+        activeApp = ""
+    }
+    agent {
+        kubernetes {
+            cloud "openshift"
+            label "build-pod"
+            serviceAccount "jenkins"
+            yamlFile "src/resources/openshift/build-pod.yaml"
+        }
+    }
+    stages {
+        stage('Configure Prereqs') {
+            steps {
+                container('python') {
+                    script {
+                        def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d.")
+                        // Set the tag for the development image: version + build number
+                        def withExtraChars = "${version}-" + currentBuild.number
+                        devTag = withExtraChars.replaceAll("[\r\n|\n\r|\n|\r]", "")
+
+                        // Set the tag for the production image: version
+                        prodTag = "${version}"
+
+                        echo "devTag: ${devTag}"
+                        echo "prodTag: ${prodTag}"
+                    }
+
+                    sh 'python3 --version'
+                    sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
+                    sh 'python3 -m pip install --user --upgrade -r requirements.txt'
+                }
+            }
+        }
+        stage('Package') {
+            steps {
+                container('python') {
+                    sh 'python3 setup.py sdist bdist_wheel'
+                }
+            }
+        }
+        stage('Unit Test') {
+            steps {
+                sh 'echo Placeholder for unit tests'
+            }
+        }
+        stage('Archive') {
+            steps {
+                container('python') {
+                    sh 'python3 -m twine upload --config-file /etc/config/.pypirc -r pypi-internal dist/*'
+                }
+            }
+        }
+        stage('Tag') {
+            steps {
+                sh 'echo Placeholder for git tagging'
+            }
+        }
+        stage('Build App Container(s)') {
+            parallel {
+                stage("Build backend") {
+                    steps {
+                        container('python') {
+                            timestamps {
+                                // build backend container and tag with current version
+                                sh "oc -n ${devProject} start-build bc/${backendImageName} --wait"
+                                sh "oc -n ${devProject} tag ${devProject}/${backendImageName}:latest ${devProject}/${backendImageName}:${devTag}"
+                            }
+                        }
+                    }
+                }
+                stage("Build frontend") {
+                    steps {
+                        container('python') {
+                            timestamps {
+                                // build frontend container and tag with current version
+                                sh "oc -n ${devProject} start-build bc/${frontendImageName} --wait"
+                                sh "oc -n ${devProject} tag ${devProject}/${frontendImageName}:latest ${devProject}/${frontendImageName}:${devTag}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy App(s) to Dev') {
+            steps {
+                container('python') {
+                    // deploy backend
+                    sh "oc -n ${devProject} set image dc/${backendImageName} ${backendImageName}=${devProject}/${backendImageName}:${devTag} --source=imagestreamtag"
+                    sh "oc -n ${devProject} set env dc/${backendImageName} VERSION=\"${devTag} (${backendImageName}-dev)\""
+                    rollout(devProject, backendImageName)
+
+                    // deploy frontend
+                    sh "oc -n ${devProject} set image dc/${frontendImageName} ${frontendImageName}=${devProject}/${frontendImageName}:${devTag} --source=imagestreamtag"
+                    sh "oc -n ${devProject} set env dc/${frontendImageName} VERSION=\"${devTag} (${frontendImageName}-dev)\""
+                    rollout(devProject, frontendImageName)
+                }
+            }
+        }
+        stage('Integration Test') {
+            steps {
+                container('python') {
+                    sh 'echo Placeholder for integration testing with robotframework'
+                }
+            }
+        }
+    }
+}
+
