@@ -51,7 +51,7 @@ pipeline {
         stage('Unit Test') {
             steps {
                 container('python') {
-                    sh 'pytest tests'
+                    sh 'python3 -m pytest tests'
                 }
             }
         }
