@@ -26,7 +26,7 @@ objects:
         type: Git
       strategy:
         jenkinsPipelineStrategy:
-          jenkinsfilePath: src/resources/pipeline/Jenkinsfile
+          jenkinsfilePath: ${JENKINSFILE_PATH}
         type: JenkinsPipeline
 parameters:
   - name: NAME
@@ -38,3 +38,6 @@ parameters:
   - name: BRANCH
     value: master
     description: The repository branch to reference
+  - name: JENKINSFILE_PATH
+    value: src/resources/pipeline/Jenkinsfile
+    description: Path to the Jenkinsfile for this pipeline

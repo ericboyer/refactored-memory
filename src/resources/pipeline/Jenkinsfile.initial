@@ -36,6 +36,7 @@ pipeline {
                     }
 
                     sh 'python3 --version'
+                    sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
                 }
             }
@@ -49,9 +50,7 @@ pipeline {
         }
         stage('Unit Test') {
             steps {
-                container('python') {
-                    sh 'python3 -m pytest tests'
-                }
+                sh 'echo Placeholder for unit tests'
             }
         }
         stage('Archive') {
@@ -63,7 +62,7 @@ pipeline {
         }
         stage('Tag') {
             steps {
-                sh 'echo *** TODO: Add git tag ***'
+                sh 'echo Placeholder for git tagging'
             }
         }
         stage('Build App Container(s)') {
@@ -110,25 +109,10 @@ pipeline {
         stage('Integration Test') {
             steps {
                 container('python') {
-                    sh 'echo *** TODO: Add robotframework integration tests'
+                    sh 'echo Placeholder for integration testing with robotframework'
                 }
             }
         }
     }
 }
 
-void rollout(String project, String name) {
-    script {
-        // Use the OpenShift Plugin to rollout and wait for at least 1 pod in "Running" state
-        openshift.withCluster() {
-            openshift.withProject(project) {
-                def rm = openshift.selector("dc", "${name}").rollout()
-                timeout(5) {
-                    openshift.selector("dc", "${name}").related('pods').untilEach(1) {
-                        return (it.object().status.phase == "Running")
-                    }
-                }
-            }
-        }
-    }
-}

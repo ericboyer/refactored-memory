@@ -36,6 +36,7 @@ pipeline {
                     }
 
                     sh 'python3 --version'
+                    sh 'python3 -m pip install --user --upgrade setuptools wheel twine'
                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
                 }
             }
@@ -49,9 +50,7 @@ pipeline {
         }
         stage('Unit Test') {
             steps {
-                container('python') {
-                    sh 'python3 -m pytest tests'
-                }
+                sh 'echo Placeholder for unit tests'
             }
         }
         stage('Archive') {
@@ -63,7 +62,12 @@ pipeline {
         }
         stage('Tag') {
             steps {
-                sh 'echo *** TODO: Add git tag ***'
+                sh 'echo Placeholder for git tagging'
+            }
+        }
+        stage('Static Analysis') {
+            steps {
+                sh 'echo Placeholder for static analysis'
             }
         }
         stage('Build App Container(s)') {
@@ -73,7 +77,7 @@ pipeline {
                         container('python') {
                             timestamps {
                                 // build backend container and tag with current version
-                                sh "oc -n ${devProject} start-build bc/${backendImageName} --wait"
+                                sh "oc -n ${devProject} start-build bc/${backendImageName} --wait --follow"
                                 sh "oc -n ${devProject} tag ${devProject}/${backendImageName}:latest ${devProject}/${backendImageName}:${devTag}"
                             }
                         }
@@ -84,7 +88,7 @@ pipeline {
                         container('python') {
                             timestamps {
                                 // build frontend container and tag with current version
-                                sh "oc -n ${devProject} start-build bc/${frontendImageName} --wait"
+                                sh "oc -n ${devProject} start-build bc/${frontendImageName} --wait --follow"
                                 sh "oc -n ${devProject} tag ${devProject}/${frontendImageName}:latest ${devProject}/${frontendImageName}:${devTag}"
                             }
                         }
@@ -98,37 +102,51 @@ pipeline {
                     // deploy backend
                     sh "oc -n ${devProject} set image dc/${backendImageName} ${backendImageName}=${devProject}/${backendImageName}:${devTag} --source=imagestreamtag"
                     sh "oc -n ${devProject} set env dc/${backendImageName} VERSION=\"${devTag} (${backendImageName}-dev)\""
-                    rollout(devProject, backendImageName)
+                    sh "oc -n ${devProject} rollout latest dc/${backendImageName}"
+                    waitOnDeployment(devProject, backendImageName)
 
                     // deploy frontend
                     sh "oc -n ${devProject} set image dc/${frontendImageName} ${frontendImageName}=${devProject}/${frontendImageName}:${devTag} --source=imagestreamtag"
                     sh "oc -n ${devProject} set env dc/${frontendImageName} VERSION=\"${devTag} (${frontendImageName}-dev)\""
-                    rollout(devProject, frontendImageName)
+                    sh "oc -n ${devProject} rollout latest dc/${frontendImageName}"
+                    waitOnDeployment(devProject, frontendImageName)
                 }
             }
         }
         stage('Integration Test') {
             steps {
                 container('python') {
-                    sh 'echo *** TODO: Add robotframework integration tests'
+                    sh 'echo Placeholder for integration testing with robotframework'
                 }
             }
         }
+//        stage('Stash image in Nexus') {
+//            steps {
+//                container('skopeo') {
+//                    sh 'echo Placeholder for Stash image in registry'
+//                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:r3dh4t1 docker://${internalClusterRegistry}/${devProject}/${imageName}:${devTag} docker://${clusterRegistry}/${imageName}:${devTag}"
+//                    // TBD: Tag the built image with the production tag.
+//                    sh "oc -n ${prodProject} tag ${devProject}/${imageName}:${devTag} ${devProject}/${imageName}:${prodTag}"
+//                }
+//            }
+//        }
     }
 }
 
-void rollout(String project, String name) {
+void waitOnDeployment(String project, String imageName) {
     script {
-        // Use the OpenShift Plugin to rollout and wait for at least 1 pod in "Running" state
+        // Use the openshift plugin to wait for the deployment to complete
         openshift.withCluster() {
             openshift.withProject(project) {
-                def rm = openshift.selector("dc", "${name}").rollout()
-                timeout(5) {
-                    openshift.selector("dc", "${name}").related('pods').untilEach(1) {
-                        return (it.object().status.phase == "Running")
-                    }
+                def dc = openshift.selector("dc", "${imageName}").object()
+                def dc_version = dc.status.latestVersion
+                def rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
+                echo "Waiting for ReplicationController ${imageName}-${dc_version} to be ready"
+                while (rc.spec.replicas != rc.status.readyReplicas) {
+                    sleep 5
+                    rc = openshift.selector("rc", "${imageName}-${dc_version}").object()
                 }
-            }
-        }
+            } // withProject
+        } // withCluster
     }
 }
