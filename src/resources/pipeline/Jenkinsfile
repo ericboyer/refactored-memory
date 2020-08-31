@@ -50,7 +50,9 @@ pipeline {
         }
         stage('Unit Test') {
             steps {
-                sh 'echo Placeholder for unit tests'
+                container('python') {
+                    sh 'pytest tests'
+                }
             }
         }
         stage('Archive') {
