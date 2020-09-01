@@ -122,7 +122,7 @@ void rollout(String project, String name) {
         // Use the OpenShift Plugin to rollout and wait for at least 1 pod in "Running" state
         openshift.withCluster() {
             openshift.withProject(project) {
-                def rm = openshift.selector("dc", "${name}").rollout()
+                def rm = openshift.selector("dc", "${name}").rollout().latest()
                 timeout(5) {
                     openshift.selector("dc", "${name}").related('pods').untilEach(1) {
                         return (it.object().status.phase == "Running")
