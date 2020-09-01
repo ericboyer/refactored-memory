@@ -3,6 +3,8 @@ apiVersion: v1
 kind: Template
 metadata:
   name: ${APP_NAME}
+  labels:
+    build: refactored-memory
   annotations:
     app.openshfit.io/display-name: Deployment template for client-side python application demonstration.
 objects:
