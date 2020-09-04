@@ -11,7 +11,7 @@ pipeline {
         activeApp = ""
 
         // sonar
-        scannerHome = tool 'sonar-scanner-tool'
+        scannerHome = tool 'SonarQube Scanner 4.4.0.2170'
 //        'SonarScanner 4.0'
         pylintReportPath = "pylint-report"
         SONAR_PROJECT_SETTING="."
