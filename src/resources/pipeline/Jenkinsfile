@@ -91,14 +91,8 @@ pipeline {
                     }
                 }
 
-                agent {
-                    node {
-                        label 'master'
-                    }
-                }
-
                 script {
-                    withSonarQubeEnv('sonar') {
+                    withSonarQubeEnv('sonarqube') {
                         // sh 'ls -la && pwd'
                         sh "${scannerHome}/bin/sonar-scanner -X \
                                 -Dsonar.projectName=${devProject} \
