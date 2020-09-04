@@ -75,7 +75,7 @@ pipeline {
                         def projectSettings="."
                         def sources="."
                         def sourceEncoding="UTF-8"
-                        
+
                         try {
                             sh 'pylint ${WORKSPACE}/src/refactored_memory \
                                 -r n \
