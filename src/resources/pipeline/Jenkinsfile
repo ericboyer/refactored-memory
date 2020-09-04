@@ -9,14 +9,6 @@ pipeline {
         prodTag = ""
         destApp = "${imageName}-green"
         activeApp = ""
-
-        // sonar
-        scannerHome = tool 'SonarQube Scanner 4.4.0.2170'
-//        'SonarScanner 4.0'
-        pylintReportPath = "pylint-report"
-        SONAR_PROJECT_SETTING="."
-        SONAR_SOURCES="."
-        SONAR_SOURCE_ENCODING="UTF-8"
     }
     agent {
         kubernetes {
@@ -75,38 +67,56 @@ pipeline {
             }
         }
         stage('Static Analysis (sonarqube)') {
+            def scannerHome = tool name: 'sonar-scanner-tool'
+            def pylintReportPath = "pylint-report"
+            def projectSettings="."
+            def sources="."
+            def sourceEncoding="UTF-8"
+
             steps {
                 container('python') {
                     script {
                         try {
                             sh 'pylint ${WORKSPACE}/src/refactored_memory \
-                            -r n \
-                            --msg-template="{path}:{line} [{msg_id}({symbol}), {obj}] {msg}" \
-                            2>&1 ${pylintReportPath}'
-                            var token="b9e37fece5e12ade8326f2d455749090732f0a48"
+                                -r n \
+                                --msg-template="{path}:{line} [{msg_id}({symbol}), {obj}] {msg}" \
+                                2>&1 ${pylintReportPath}'
+                                var token="b9e37fece5e12ade8326f2d455749090732f0a48"
+
+                            withSonarQubeEnv('sonarqube') {
+                                // sh 'ls -la && pwd'
+                                sh "${scannerHome}/bin/sonar-scanner -X \
+                                    -Dsonar.projectName=${devProject} \
+                                    -Dsonar.projectKey=${devProject} \
+                                    -Dsonar.host.url=${env.SONAR_HOST_URL} \
+                                    -Dsonar.settings=${projectSettings} \
+                                    -Dsonar.sources=${sources} \
+                                    -Dsonar.SourceEncoding=${sourceEncoding} \
+                                    -Dsonar.python.pylint.reportPath=${pylintReportPath}"
+                            }
                         } catch (err) {
                             echo err.getMessage()
                             echo "Error detected but continuing on "
                         }
                     }
                 }
-
-                script {
-                    withSonarQubeEnv('sonarqube') {
-                        // sh 'ls -la && pwd'
-                        sh "${scannerHome}/bin/sonar-scanner -X \
-                                -Dsonar.projectName=${devProject} \
-                                -Dsonar.projectKey=${devProject} \
-                                -Dsonar.host.url=${env.SONAR_HOST_URL} \
-                                -Dsonar.settings=${SONAR_PROJECT_SETTING} \
-                                -Dsonar.sources=${SONAR_SOURCES} \
-                                -Dsonar.SourceEncoding=${SONAR_SOURCE_ENCODING} \
-                                -Dsonar.python.pylint.reportPath=${pylintReportPath}"
-
-                        // sh "${SONAR_SCANNER_PATH}/bin/sonar-scanner -X -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${env.SONAR_HOST_URL} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.settings=${SONAR_PROJECT_SETTING} -Dsonar.sources=${SONAR_SOURCES} -Dsonar.SourceEncoding=UTF-8"
-                    }
-                }
             }
+
+//            script {
+//                withSonarQubeEnv('sonarqube') {
+//                    // sh 'ls -la && pwd'
+//                    sh "${scannerHome}/bin/sonar-scanner -X \
+//                        -Dsonar.projectName=${devProject} \
+//                        -Dsonar.projectKey=${devProject} \
+//                        -Dsonar.host.url=${env.SONAR_HOST_URL} \
+//                        -Dsonar.settings=${SONAR_PROJECT_SETTING} \
+//                        -Dsonar.sources=${SONAR_SOURCES} \
+//                        -Dsonar.SourceEncoding=${SONAR_SOURCE_ENCODING} \
+//                        -Dsonar.python.pylint.reportPath=${pylintReportPath}"
+//
+//                    // sh "${SONAR_SCANNER_PATH}/bin/sonar-scanner -X -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${env.SONAR_HOST_URL} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.settings=${SONAR_PROJECT_SETTING} -Dsonar.sources=${SONAR_SOURCES} -Dsonar.SourceEncoding=UTF-8"
+//                }
+//            }
         }
         stage('Build App Container(s)') {
             parallel {
