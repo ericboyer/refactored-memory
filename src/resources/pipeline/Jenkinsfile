@@ -67,15 +67,15 @@ pipeline {
             }
         }
         stage('Static Analysis (sonarqube)') {
-            def scannerHome = tool name: 'sonar-scanner-tool'
-            def pylintReportPath = "pylint-report"
-            def projectSettings="."
-            def sources="."
-            def sourceEncoding="UTF-8"
-
             steps {
                 container('python') {
                     script {
+                        def scannerHome = tool name: 'sonar-scanner-tool'
+                        def pylintReportPath = "pylint-report"
+                        def projectSettings="."
+                        def sources="."
+                        def sourceEncoding="UTF-8"
+                        
                         try {
                             sh 'pylint ${WORKSPACE}/src/refactored_memory \
                                 -r n \
