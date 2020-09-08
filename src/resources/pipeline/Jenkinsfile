@@ -75,13 +75,13 @@ pipeline {
                         def projectSettings="."
                         def sources="."
                         def sourceEncoding="UTF-8"
+                        def token="b9e37fece5e12ade8326f2d455749090732f0a48"
 
                         try {
                             sh 'pylint ${WORKSPACE}/src/refactored_memory \
                                 -r n \
                                 --msg-template="{path}:{line} [{msg_id}({symbol}), {obj}] {msg}" \
                                 2>&1 ${pylintReportPath}'
-                                var token="b9e37fece5e12ade8326f2d455749090732f0a48"
 
                             withSonarQubeEnv('sonarqube') {
                                 // sh 'ls -la && pwd'
@@ -89,6 +89,7 @@ pipeline {
                                     -Dsonar.projectName=${devProject} \
                                     -Dsonar.projectKey=${devProject} \
                                     -Dsonar.host.url=${env.SONAR_HOST_URL} \
+                                    -Dsonar.login=${token} \
                                     -Dsonar.settings=${projectSettings} \
                                     -Dsonar.sources=${sources} \
                                     -Dsonar.SourceEncoding=${sourceEncoding} \
