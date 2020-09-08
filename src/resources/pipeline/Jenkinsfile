@@ -70,7 +70,7 @@ pipeline {
             steps {
                 container('python') {
                     script {
-                        def scannerHome = tool 'SonarQube Scanner'
+                        def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                         def pylintReportPath = "pylint-report"
                         def projectSettings="."
                         def sources="."
