@@ -25,7 +25,7 @@ pipeline {
                     script {
                         def version = sh(returnStdout: true, script: "python3 setup.py --version | cut -f1,2 -d.")
                         // Set the tag for the development image: version + build number
-                        def withExtraChars = "${version}-" + currentBuild.number
+                        def withExtraChars = "${version}." + currentBuild.number
                         devTag = withExtraChars.replaceAll("[\r\n|\n\r|\n|\r]", "")
 
                         // Set the tag for the production image: version
@@ -66,7 +66,8 @@ pipeline {
                 branch 'dev'
             }
             steps {
-                sh "git tag ${devTag}"
+                sh "git tag v${devTag}"
+                sh "git push origin --tags"
             }
         }
         stage('Static Analysis (sonarqube)') {
