@@ -79,7 +79,7 @@ pipeline {
             steps {
                 container('python') {
                     script {
-                          try {
+                        try {
                             sh 'pylint ${WORKSPACE}/src/refactored_memory \
                                 -r n \
                                 --msg-template="{path}:{line} [{msg_id}({symbol}), {obj}] {msg}" \
@@ -89,7 +89,8 @@ pipeline {
                             echo "Error detected but continuing on "
                         }
                     }
-
+                }
+                container('jnlp') {
                     withSonarQubeEnv('sonarqube') {
                         sh 'echo PWD: ${PWD}'
                         sh 'echo scannerHome: ${scannerHome}'
