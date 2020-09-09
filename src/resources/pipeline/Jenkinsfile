@@ -66,6 +66,7 @@ pipeline {
                 branch 'dev'
             }
             steps {
+                sh "git config --local user.name 'pipeline'"
                 sh "git tag v${devTag}"
                 sh "git remote -v"
                 sh "git push origin --tags"
@@ -86,10 +87,10 @@ pipeline {
                 container('python') {
                     script {
                         try {
-                            sh 'pylint ${WORKSPACE}/src/refactored_memory \
+                            sh "pylint ${WORKSPACE}/src/refactored_memory \
                                 -r n \
-                                --msg-template="{path}:{line} [{msg_id}({symbol}), {obj}] {msg}" \
-                                2>&1 ${pylintReportPath}'
+                                --msg-template=\"{path}:{line} [{msg_id}({symbol}), {obj}] {msg}\" \
+                                2>&1 ${pylintReportPath}"
                         } catch (err) {
                             echo err.getMessage()
                             echo "Error detected but continuing on "
@@ -99,15 +100,15 @@ pipeline {
                 container('jnlp') { // switch to container with a JVM
                     withSonarQubeEnv('sonarqube') {
                         sh "${scannerHome}/bin/sonar-scanner \
-                                    -Dsonar.projectName=${devProject} \
-                                    -Dsonar.projectKey=${devProject} \
-                                    -Dsonar.host.url=${env.SONAR_HOST_URL} \
-                                    -Dsonar.login=${token} \
-                                    -Dsonar.settings=${projectSettings} \
-                                    -Dsonar.sources=${sources} \
-                                    -Dsonar.tests=${tests} \
-                                    -Dsonar.sourceEncoding=${sourceEncoding} \
-                                    -Dsonar.python.pylint.reportPath=${pylintReportPath}"
+                            -Dsonar.projectName=${devProject} \
+                            -Dsonar.projectKey=${devProject} \
+                            -Dsonar.host.url=${env.SONAR_HOST_URL} \
+                            -Dsonar.login=${token} \
+                            -Dsonar.settings=${projectSettings} \
+                            -Dsonar.sources=${sources} \
+                            -Dsonar.tests=${tests} \
+                            -Dsonar.sourceEncoding=${sourceEncoding} \
+                            -Dsonar.python.pylint.reportPath=${pylintReportPath}"
                     }
                 }
             }
