@@ -62,8 +62,11 @@ pipeline {
             }
         }
         stage('Tag') {
+            when {
+                branch 'dev'
+            }
             steps {
-                sh 'echo *** TODO: Add git tag ***'
+                sh "git tag ${devTag}"
             }
         }
         stage('Static Analysis (sonarqube)') {
@@ -90,12 +93,12 @@ pipeline {
                         }
                     }
                 }
-                container('jnlp') {
+                container('jnlp') { // switch to container with a JVM
                     withSonarQubeEnv('sonarqube') {
                         sh 'echo PWD: ${PWD}'
                         sh 'echo scannerHome: ${scannerHome}'
                         sh 'ls -la ${scannerHome}/bin/sonar-scanner'
-                        sh "${scannerHome}/bin/sonar-scanner -X \
+                        sh "${scannerHome}/bin/sonar-scanner \
                                     -Dsonar.projectName=${devProject} \
                                     -Dsonar.projectKey=${devProject} \
                                     -Dsonar.host.url=${env.SONAR_HOST_URL} \
@@ -107,22 +110,6 @@ pipeline {
                     }
                 }
             }
-
-//            script {
-//                withSonarQubeEnv('sonarqube') {
-//                    // sh 'ls -la && pwd'
-//                    sh "${scannerHome}/bin/sonar-scanner -X \
-//                        -Dsonar.projectName=${devProject} \
-//                        -Dsonar.projectKey=${devProject} \
-//                        -Dsonar.host.url=${env.SONAR_HOST_URL} \
-//                        -Dsonar.settings=${SONAR_PROJECT_SETTING} \
-//                        -Dsonar.sources=${SONAR_SOURCES} \
-//                        -Dsonar.SourceEncoding=${SONAR_SOURCE_ENCODING} \
-//                        -Dsonar.python.pylint.reportPath=${pylintReportPath}"
-//
-//                    // sh "${SONAR_SCANNER_PATH}/bin/sonar-scanner -X -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${env.SONAR_HOST_URL} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.settings=${SONAR_PROJECT_SETTING} -Dsonar.sources=${SONAR_SOURCES} -Dsonar.SourceEncoding=UTF-8"
-//                }
-//            }
         }
         stage('Build App Container(s)') {
             parallel {
