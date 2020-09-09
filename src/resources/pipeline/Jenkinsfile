@@ -67,6 +67,15 @@ pipeline {
             }
         }
         stage('Static Analysis (sonarqube)') {
+            environment {
+                scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                pylintReportPath = "pylint-report"
+                projectSettings="."
+                sources="."
+                sourceEncoding="UTF-8"
+                token="b9e37fece5e12ade8326f2d455749090732f0a48"
+            }
+
             steps {
                 container('python') {
                     script {
@@ -82,13 +91,6 @@ pipeline {
                     }
                 }
             }
-
-            def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-            def pylintReportPath = "pylint-report"
-            def projectSettings="."
-            def sources="."
-            def sourceEncoding="UTF-8"
-            def token="b9e37fece5e12ade8326f2d455749090732f0a48"
 
             withSonarQubeEnv('sonarqube') {
                 sh 'echo PWD: ${PWD}'
