@@ -56,8 +56,7 @@ class Server:
             print('Closing connection')
             if not client_socket is None:
                 client_socket.close()
-            return 0
-
+                
 
 if __name__ == '__main__':
     main()
