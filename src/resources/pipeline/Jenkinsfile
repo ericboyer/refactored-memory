@@ -89,14 +89,12 @@ pipeline {
                             echo "Error detected but continuing on "
                         }
                     }
-                }
-            }
 
-            withSonarQubeEnv('sonarqube') {
-                sh 'echo PWD: ${PWD}'
-                sh 'echo scannerHome: ${scannerHome}'
-                sh 'ls -la ${scannerHome}/bin/sonar-scanner'
-                sh "${scannerHome}/bin/sonar-scanner -X \
+                    withSonarQubeEnv('sonarqube') {
+                        sh 'echo PWD: ${PWD}'
+                        sh 'echo scannerHome: ${scannerHome}'
+                        sh 'ls -la ${scannerHome}/bin/sonar-scanner'
+                        sh "${scannerHome}/bin/sonar-scanner -X \
                                     -Dsonar.projectName=${devProject} \
                                     -Dsonar.projectKey=${devProject} \
                                     -Dsonar.host.url=${env.SONAR_HOST_URL} \
@@ -105,6 +103,8 @@ pipeline {
                                     -Dsonar.sources=${sources} \
                                     -Dsonar.SourceEncoding=${sourceEncoding} \
                                     -Dsonar.python.pylint.reportPath=${pylintReportPath}"
+                    }
+                }
             }
 
 //            script {
