@@ -70,24 +70,31 @@ pipeline {
             steps {
                 container('python') {
                     script {
-                        def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                        def pylintReportPath = "pylint-report"
-                        def projectSettings="."
-                        def sources="."
-                        def sourceEncoding="UTF-8"
-                        def token="b9e37fece5e12ade8326f2d455749090732f0a48"
-
-                        try {
+                          try {
                             sh 'pylint ${WORKSPACE}/src/refactored_memory \
                                 -r n \
                                 --msg-template="{path}:{line} [{msg_id}({symbol}), {obj}] {msg}" \
                                 2>&1 ${pylintReportPath}'
+                        } catch (err) {
+                            echo err.getMessage()
+                            echo "Error detected but continuing on "
+                        }
+                    }
+                }
+            }
 
-                            withSonarQubeEnv('sonarqube') {
-                                sh 'echo PWD: ${PWD}'
-                                sh 'echo scannerHome: ${scannerHome}'
-                                sh 'ls -la ${scannerHome}/bin/sonar-scanner'
-                                sh "${scannerHome}/bin/sonar-scanner -X \
+            def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+            def pylintReportPath = "pylint-report"
+            def projectSettings="."
+            def sources="."
+            def sourceEncoding="UTF-8"
+            def token="b9e37fece5e12ade8326f2d455749090732f0a48"
+
+            withSonarQubeEnv('sonarqube') {
+                sh 'echo PWD: ${PWD}'
+                sh 'echo scannerHome: ${scannerHome}'
+                sh 'ls -la ${scannerHome}/bin/sonar-scanner'
+                sh "${scannerHome}/bin/sonar-scanner -X \
                                     -Dsonar.projectName=${devProject} \
                                     -Dsonar.projectKey=${devProject} \
                                     -Dsonar.host.url=${env.SONAR_HOST_URL} \
@@ -96,13 +103,6 @@ pipeline {
                                     -Dsonar.sources=${sources} \
                                     -Dsonar.SourceEncoding=${sourceEncoding} \
                                     -Dsonar.python.pylint.reportPath=${pylintReportPath}"
-                            }
-                        } catch (err) {
-                            echo err.getMessage()
-                            echo "Error detected but continuing on "
-                        }
-                    }
-                }
             }
 
 //            script {
