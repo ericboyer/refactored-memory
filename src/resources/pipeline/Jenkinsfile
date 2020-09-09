@@ -84,7 +84,9 @@ pipeline {
                                 2>&1 ${pylintReportPath}'
 
                             withSonarQubeEnv('sonarqube') {
-                                // sh 'ls -la && pwd'
+                                sh 'echo PWD: ${PWD}'
+                                sh 'echo scannerHome: ${scannerHome}'
+                                sh 'ls -la ${scannerHome}/bin/sonar-scanner'
                                 sh "${scannerHome}/bin/sonar-scanner -X \
                                     -Dsonar.projectName=${devProject} \
                                     -Dsonar.projectKey=${devProject} \
