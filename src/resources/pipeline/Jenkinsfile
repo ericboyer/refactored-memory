@@ -197,6 +197,6 @@ void dumpPipelineConfig() {
     sh "echo devTag = ${devTag}"
     sh "echo prodTag = ${prodTag}"
     sh "echo destApp = ${destApp}"
-    sh "echo activeApp = ${activeApp}"
+//    sh "echo activeApp = ${activeApp}"
     sh "echo *************************************"
 }
