@@ -1,11 +1,12 @@
 pipeline {
     environment {
-        frontendImageName = "refactored-memory-frontend"
-        backendImageName = "refactored-memory-backend"
-        devProject = "refactored-memory-dev"
-        prodProject = "refactored-memory-prod"
+        appName = "refactored-memory"
+        frontendImageName = "${appName}-frontend"
+        backendImageName = "${appName}-backend"
+        devProject = "${appName}-dev"
+        prodProject = "${appName}-prod"
         // TODO Fix devTag to start with the most recent successful build
-        devTag = "0.0-0"
+        devTag = "0.0.0"
         prodTag = ""
         destApp = "${imageName}-green"
         activeApp = ""
@@ -30,15 +31,14 @@ pipeline {
 
                         // Set the tag for the production image: version
                         prodTag = "${version}"
-
-                        echo "devTag: ${devTag}"
-                        echo "prodTag: ${prodTag}"
                     }
 
                     sh 'python3 --version'
                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
                 }
             }
+
+            dumpPipelineConfig()
         }
         stage('Package') {
             steps {
@@ -75,7 +75,8 @@ pipeline {
                 scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                 pylintReportPath = "pylint-report"
                 projectSettings="."
-                sources="."
+                sources="src/refactored_memory"
+                tests="tests"
                 sourceEncoding="UTF-8"
                 token="b9e37fece5e12ade8326f2d455749090732f0a48"
             }
@@ -96,9 +97,6 @@ pipeline {
                 }
                 container('jnlp') { // switch to container with a JVM
                     withSonarQubeEnv('sonarqube') {
-                        sh 'echo PWD: ${PWD}'
-                        sh 'echo scannerHome: ${scannerHome}'
-                        sh 'ls -la ${scannerHome}/bin/sonar-scanner'
                         sh "${scannerHome}/bin/sonar-scanner \
                                     -Dsonar.projectName=${devProject} \
                                     -Dsonar.projectKey=${devProject} \
@@ -106,12 +104,20 @@ pipeline {
                                     -Dsonar.login=${token} \
                                     -Dsonar.settings=${projectSettings} \
                                     -Dsonar.sources=${sources} \
-                                    -Dsonar.SourceEncoding=${sourceEncoding} \
+                                    -Dsonar.tests=${tests} \
+                                    -Dsonar.sourceEncoding=${sourceEncoding} \
                                     -Dsonar.python.pylint.reportPath=${pylintReportPath}"
                     }
                 }
             }
         }
+//        stage("Quality Gate") {
+//            steps {
+//                timeout(time: 1, unit: 'HOURS') {
+//                    waitForQualityGate abortPipeline: true
+//                }
+//            }
+//        }
         stage('Build App Container(s)') {
             parallel {
                 stage("Build backend") {
@@ -177,4 +183,20 @@ void rollout(String project, String name) {
             }
         }
     }
+}
+
+void dumpPipelineConfig() {
+    sh "echo *************************************"
+    sh "echo *      Pipeline Configuration       *"
+    sh "echo *************************************"
+    sh "echo appName = ${appName}"
+    sh "echo frontendImageName = ${frontendImageName}"
+    sh "echo backendImageName = ${backendImageName}"
+    sh "echo devProject = ${devProject}"
+    sh "echo prodProject = ${prodProject}"
+    sh "echo devTag = ${devTag}"
+    sh "echo prodTag = ${prodTag}"
+    sh "echo destApp = ${destApp}"
+    sh "echo activeApp = ${activeApp}"
+    sh "echo *************************************"
 }
