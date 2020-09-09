@@ -36,9 +36,9 @@ pipeline {
                     sh 'python3 --version'
                     sh 'python3 -m pip install --user --upgrade -r requirements.txt'
                 }
-            }
 
-            dumpPipelineConfig()
+                dumpPipelineConfig()
+            }
         }
         stage('Package') {
             steps {
