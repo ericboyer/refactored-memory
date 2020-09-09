@@ -100,7 +100,7 @@ pipeline {
                 container('jnlp') { // switch to container with a JVM
                     withSonarQubeEnv('sonarqube') {
                         sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectName=${devProject} \
+                            -Dsonar.projectName=${appName} \
                             -Dsonar.projectKey=${devProject} \
                             -Dsonar.host.url=${env.SONAR_HOST_URL} \
                             -Dsonar.login=${token} \
