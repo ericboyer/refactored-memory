@@ -62,14 +62,19 @@ pipeline {
             }
         }
         stage('Tag') {
+            environment {
+                repo="ericboyer/refactored-memory"
+                token="fd8266e4e6a7b5134d82b2eceaf1ff4009e4435a"
+            }
             when {
                 branch 'dev'
             }
             steps {
-                sh "git config --local user.name 'pipeline'"
-                sh "git tag v${devTag}"
-                sh "git remote -v"
-                sh "git push origin --tags"
+                sh "git config --global hub.protocol https && \
+                  git remote set-url origin https://${token}:x-oauth-basic@github.com/${repo}.git && \
+                  git tag v${devTag} && \
+                  git remote -v && \
+                  git push origin --tags"
             }
         }
         stage('Static Analysis (sonarqube)') {
