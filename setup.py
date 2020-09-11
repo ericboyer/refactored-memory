@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='refactored-memory',
-    version='0.0.{}'.format(os.environ["BUILD_NUMBER"]),
+    version='1.0.0',
     author="eboyer",
     author_email="eboyer@redhat.com",
     description="Python client/server application to demonstrate pipelines on OpenShift.",
