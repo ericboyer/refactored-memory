@@ -2,9 +2,9 @@
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
+  name: frontend
   labels:
     app: frontend
-  name: frontend
 spec:
   lookupPolicy:
     local: false
@@ -12,9 +12,9 @@ spec:
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
+  name: frontend
   labels:
     app: frontend
-  name: frontend
 spec:
   failedBuildsHistoryLimit: 5
   nodeSelector: null
@@ -60,9 +60,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: frontend
   labels:
     app: frontend
-  name: frontend
 spec:
   ports:
     - name: 8080-tcp
@@ -78,65 +78,65 @@ spec:
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
-labels:
-  app: frontend
-name: frontend
+  name: frontend
+  labels:
+    app: frontend
 spec:
-replicas: 1
-revisionHistoryLimit: 5
-selector:
-  app: frontend
-  deploymentconfig: frontend
-strategy:
-  activeDeadlineSeconds: 21600
-  resources: {}
-  rollingParams:
-    intervalSeconds: 1
-    maxSurge: 25%
-    maxUnavailable: 25%
-    timeoutSeconds: 600
-    updatePeriodSeconds: 1
-  type: Rolling
-template:
-  metadata:
-    labels:
-      app: frontend
-      deploymentconfig: frontend
-  spec:
-    containers:
-      - env:
-        - name: VERSION
-          value: 0.0.0 (frontend-dev)
-        - name: RUN_PORT
-          valueFrom:
-            configMapKeyRef:
-              key: RUN_PORT
-              name: refactored-memory
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              key: BIND_PORT
-              name: refactored-memory
-        image: image-registry.openshift-image-registry.svc:5000/ebo-pipelines/frontend
-        imagePullPolicy: Always
-        name: frontend
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-    dnsPolicy: ClusterFirst
-    restartPolicy: Always
-    schedulerName: default-scheduler
-    securityContext: {}
-    terminationGracePeriodSeconds: 30
-test: false
-triggers: []
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    app: frontend
+    deploymentconfig: frontend
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: frontend
+        deploymentconfig: frontend
+    spec:
+      containers:
+        - env:
+          - name: VERSION
+            value: 0.0.0 (frontend-dev)
+          - name: RUN_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: RUN_PORT
+                name: refactored-memory
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                key: BIND_PORT
+                name: refactored-memory
+          image: image-registry.openshift-image-registry.svc:5000/ebo-pipelines/frontend
+          imagePullPolicy: Always
+          name: frontend
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers: []
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
+  name: frontend
   labels:
     app: frontend
-  name: frontend
 spec:
   port:
     targetPort: 8080-tcp

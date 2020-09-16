@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ${APP_NAME}
+  name: refactored-memory
   labels:
-    app: ${APP_NAME}
+    app: refactored-memory
 data:
   BIND_PORT: "8088"
   RUN_PORT: "8080"
-  NEXUS_HOSTNAME: nexusrepo-sonatype-nexus-service-${CICD_NAMESPACE}.apps.${CLUSTER_SUBDOMAIN}
+  NEXUS_HOSTNAME: nexusrepo-sonatype-nexus-service-ebo-cicd.apps.ccsd4.na-1.rht-labs.com
   PYPI_GROUP_REPO: repository/pypi-public/simple
 #---
 #    apiVersion: authorization.openshift.io/v1
@@ -16,7 +16,7 @@ data:
 #    metadata:
 #      name: edit
 #      labels:
-#        app: ${APP_NAME}
+#        app: refactored-memory
 #    roleRef:
 #      name: edit
 #    subjects:
